@@ -1,0 +1,79 @@
+#lang sicp
+;; scheme 表达式内部按照顺序求值
+(* (+ 2 (* 4 6))
+   (+ 3 5 7))
+(define
+  (square x)
+  (* x x))
+;; 求x^2 + y^2
+(define
+  (sum-of-squares x y)
+  (+ (square x) (square y)))
+(define
+  (f a)
+  (sum-of-squares (+ a 1) (* a 2)))
+(f 5)
+;; 条件判断, lisp的特点是每一步操作一定会得到一个值(除了define),这称为一个过程，因此函数不需要显式返回return
+(define (abs x)
+  (cond ((> x 0) x)
+        ((= x 0) 0)
+        ((< x 0) (- x))))
+(define (another-abs x)
+  (if (< x 0)
+      (- x)
+      x))
+;; scheme中的add, or和not,由于scheme的中序表达，scheme中的谓词是可以自定义的（看不出跟函数的区别）
+(define (>= x y)
+  (or (> x y) (= x y)))
+;; scheme 中false是#f true是#t
+(>= 4 5)
+;; sicp test 1-2
+(/ (+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5)))))
+   (* 3 (- 6 2) (- 2 7)))
+;; sicp test 1-3
+(define
+  (bigger x y)
+  (if (> x y)
+      x
+      y))
+(define
+  (smaller x y)
+  (if (< x y)
+      x
+      y))
+(define
+  (get-sum-of-two-bigger-another x y z)
+  (+ (bigger x y)
+     (bigger (smaller x y) z)))
+(define
+  (get-sum-of-two-biggest x y z)
+  (if (> x y)
+      (if (> y z)
+          (+ x y)
+          (+ x z))
+      (if (> x z)
+          (+ x y)
+          (+ y z))))
+(get-sum-of-two-biggest 2 3 4)
+(get-sum-of-two-biggest 44 45 46)
+;; 牛顿逼近求平方根
+;; 求平均数
+(define (average x y)
+  (/ (+ x y) 2))
+;; 改进猜测值(平方数与(平方数/猜测数)的平均值)
+(define (improve guess x)
+  (average guess (/ x guess)))
+;; (define (good-enough? guess x)
+;;  (< (abs (- (square guess) x)) 0.001))
+;; 更好的改进方法
+(define (good-enough? old-guess new-guess)
+  (< (/ (abs (- old-guess new-guess)) old-guess) 0.001))
+(define (sqrt-iter guess x)
+  (if (good-enough? guess (improve guess x))
+      guess
+      (sqrt-iter (improve guess x) x)))
+(define (sqrt x)
+  (sqrt-iter 1.0 x))
+
+;;(sqrt 9)
+(sqrt 0.0009)
