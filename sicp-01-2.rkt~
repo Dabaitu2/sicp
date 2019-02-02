@@ -1,0 +1,24 @@
+#lang sicp
+;; 求GCD
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+(gcd 100 20)
+;; 寻找因子
+(provide
+ (define (square n)
+           (* n n)))
+(define (divides? a b)
+  (= (remainder b a) 0))
+;; 这个函数寻找从某个数n从test-divisor开始有没有因子
+;; 如果一个数不是素数,那它一定有<=√n 的因子
+(define (find-divisor n test-dvisor)
+  ;; (如果test-divisor的平方>n, 则预设自己是自己的因子，比如对于2这个test-divisor, 小于4的1,2,3肯定都是没有其他因子的
+  (cond ((> (square test-divisor) n) n)
+        ((divides? test-divisor n) test-divisor)
+        (else (find-divisor n (+ test-divisor 1)))))
+(define (smallest-divisor n)
+  (find-divisor n 2))
+(define (prime? n)
+  (= n (smallest-divisor n)))
