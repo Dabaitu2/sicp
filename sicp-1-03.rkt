@@ -60,3 +60,106 @@
   (cond ((not (even? n)) (display "wrong n"))
         (else (sum term-simpsom counter inc n))))
 (simpsom-intergral cube 0 1 1000 0)
+
+;; 找出函数的不动点
+(define tolerance 0.00001)
+(define (display-info guess step)
+  (display "Step: ")
+    (display step)
+    (display " ")
+    
+    (display "Guess: ")
+    (display guess)
+    (newline))
+(define (fixed-point f first-guess)
+   (define (close-enough? v1 v2)
+     (< (abs (- v1 v2)) tolerance))
+   (define (try guess step)
+     (let ((next (f guess)))
+       (display-info guess step)
+       (if (close-enough? guess next)
+           (display "\n")
+           (try next (+ 1 step)))))
+   (try first-guess 1))
+;; (fixed-point cos 1.0)
+(define (golden-equation x)
+  (+ 1 (/ 1 x)))
+(fixed-point golden-equation 1.0)
+
+;; 平均阻尼函数（防止猜测值过分震荡,帮助快速收敛）
+;; 高阶函数: 参数是一个函数,返回也是一个函数
+(define (average-damp f)
+  (lambda (x)
+    (average x 
+             (f x))))
+;; 求x^x = 1000 的一个根(x->log(1000)/log(x)的一个不动点)
+(define formula 
+  (lambda (x)
+    (/ (log 1000) 
+       (log x))))
+
+(fixed-point formula 2.0)
+(fixed-point (average-damp formula) 2.0)
+
+;; 无穷连分式k项求和
+(define (cont-frac fn fd k)
+    (define (iter counter result)
+      (cond ((= 1 counter) (/ (fn counter) (+ (fd counter) result)))
+            (else (iter (- counter 1) (/ (fn counter) (+ (fd counter) result))))))
+    (iter k 0))
+(cont-frac (lambda (i) 1.0)
+           (lambda (i) 1.0)
+           1000)
+
+;; 求e
+(define (e k)
+  (define (N i) 1.0)
+  (define (D i)
+    (if (= 0 (remainder (+ i 1) 3))
+        (* 2 (/ (+ i 1) 3))
+        1))
+  (+ 2.0 (cont-frac N D k)))
+(e 1000)
+
+;; lambert公式计算正切函数值(弧度制)
+(define (tan-cf x k)
+ (define (N i)
+   (if (= i 1.0)
+       x
+       (- 0 (square x))))
+  (define (D i)
+    (- (* 2 i) 1.0))
+  (cont-frac N D k))
+(tan-cf 45 100)
+
+
+;; 求导数
+((deriv cube 0.00001) 5)
+
+;; 牛顿法求不动点
+;; 牛顿变换
+(define (newton-transform g)
+  (lambda (x)
+    (- x (/ (g x) ((deriv g 0.00001) x)))))
+(define (newtons-method g guess)
+  (fixed-point (newton-transform g) guess))
+
+(define (sqrt x)
+  (newtons-method (lambda (y) (- (square y) x))
+                  1.0))
+(sqrt 100)
+
+;; 更高一级抽象的求转换后不动点
+(define (fixed-point-of-transform g transform guess)
+  (fixed-point (transform g) guess))
+
+;; 求x^3+ax^2+bx+c的零点
+(define (cubic a b c)
+  (lambda (x)
+          (+ (cube x)
+             (* a (square x))
+             (* b x)
+             c)))
+(define (get-zero-of-cubic a b c)
+  (newtons-method (cubic a b c) 1))
+(get-zero-of-cubic 2 2 2)
