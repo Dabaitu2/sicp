@@ -1,5 +1,6 @@
 #lang sicp
-(#%require "common.rkt")
+
+(#%require "./common.rkt")
 ;; sicp-1-03 用高阶函数做抽象
 ;; 计算给定范围的整数之和
 (define (sum-integers a b)
