@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "common.rkt")
 (#%require racket/trace)
 ;; 1-30 迭代的sum

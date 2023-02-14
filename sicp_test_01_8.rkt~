@@ -1,9 +1,0 @@
-#lang sicp
-;; 计算立方
-(define (cube x)
-  (* x x x))
-(define (good-enough? guess x)
-  ())
-;; 求立方根的近似值
-(define (cube-improve guess x)
-  ())

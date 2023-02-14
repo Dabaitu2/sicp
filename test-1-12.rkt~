@@ -1,8 +1,0 @@
-#lang sicp
-;; 计算帕斯卡三角形
-;; ps: 帕斯卡三角形的每一行恰好是二次项系数
-(define (pascal-triangle x y)
-  (cond ((or (> y x) (< y 1) (< x 0)) 0)
-        ((or (= y 1) (= y x)) 1)
-        (else (+ (pascal-triangle (- y 1) (- x 1))
-                 (pascal-triangle (+ y 1) (- x 1))))))
