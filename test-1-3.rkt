@@ -79,8 +79,8 @@
 ;; 函数组合
 ((compose square inc) 6)
 
-;; 函数的重复运用
 (define (repeated f base)
+;; 函数的重复运用
     (define (iter counter result)
       (if (= 1 counter)
           result
