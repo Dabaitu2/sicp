@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "../../common/conventional-interface.rkt")
 
 ;; k皇后问题的递归解法
@@ -8,28 +8,22 @@
 ;; 4. 同理，要解决k-1序列，要先解决k-2... 最后终止与解决1皇后问题，1皇后问题有k个解，此时开始回溯
 
 (define empty-board '())
-(define (ok? v pos offset)
-  (cond
-    ;; pos为空意味着是1皇后，必然为true
-    [(null? pos) #t]
-    ;; 检查该点与第一个皇后位置是否相等，是否处在统一对角(横坐标不在左右offset处)（纵坐标差距肯定是offset）
-    [(and (not (= v (car pos)))
-          (not (= v (- (car pos) offset)))
-          (not (= v (+ (car pos) offset))))
-     ;; 若不是，即通过检查，递归看下一个点是否符合
-     (ok? v (cdr pos) (+ 1 offset))]
-    [else #f]))
-
 
 ;; 链接两个list
 (define (adjoin-position new-row col rest-of-queens)
-  (cons new-row rest-of-queens))
+  (cons (list new-row col) rest-of-queens))
 
 
-;; 颠倒一下k-1皇后排序，方便ok函数执行
 (define (safe? k positions)
-  (let ([rev_positions (reverse positions)])
-    (ok? (car rev_positions) (cdr rev_positions) 1)))
+  (define (check offset queen rest-of-queens)
+    ;; 检查该点与第一个皇后位置是否相等，是否处在统一对角(横坐标不在左右offset处)（纵坐标差距肯定是offset）
+    (cond [(= offset k) #t]
+          [(= (caar rest-of-queens) (car queen)) #f]
+          [(= (- (caar rest-of-queens) offset) (car queen)) #f]
+          [(= (+ (caar rest-of-queens) offset) (car queen)) #f]
+          [else (check (+ offset 1) queen (cdr rest-of-queens))]))
+  (check 1 (car positions) (cdr positions))
+  )
 
 
 (define (queens board-size)
@@ -52,4 +46,5 @@
                   (queen-cols (- k 1))))))
   (queen-cols board-size))
 
+;; (queens 8)
 (length (queens 8))
