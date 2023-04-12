@@ -1,5 +1,5 @@
 #lang racket
-(#%require "../../../common/conventional-interface.rkt")
+(#%require "../../../common/data/conventional-interface.rkt")
 
 ;; 扩充 make-sum / make-product 使其可以接受多个参数
 ;; helpers

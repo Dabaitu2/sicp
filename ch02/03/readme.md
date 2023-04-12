@@ -1,5 +1,13 @@
 # Symbolic Data
 
+这一章我们超出数值之外, 引入符号作为数据。从而使得数据的表示能够覆盖
+到更加完善的地步(包括符号和数值)
+
+并且给出三个实例：
+1. 符号求导
+2. 支持符号的集合表示
+3. 操作符号和文本的 huffman tree
+
 All the compound data objects we have used so far were constructed ultimately from numbers.
 In this section we extend the representational capability of our language
 by introducing the ability to work with arbitrary symbols as data.
