@@ -15,7 +15,7 @@
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'make 'integer (lambda (x)
                         (if (number? x)
-                            (floor x)
+                            (round x)
                             (error "arg is not number -- make-integer" x))))
   'done)
 

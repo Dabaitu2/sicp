@@ -86,6 +86,7 @@
 ;;     [(eq? type 'complex) 2]
 ;;     [else (error "Invalid type: LEVEL" type)]))
 
+;; 习题 84 + 85
 (define (level type)
   (cond
     [(eq? type 'integer) 0]
@@ -94,7 +95,19 @@
     [(eq? type 'complex) 3]
     [else (error "Invalid type: LEVEL" type)]))
 
-;; 习题 84
+(define (equ? x y)
+  (apply-generic 'equ? x y))
+(define (raise x)
+  (apply-generic 'raise x))
+(define (drop x)
+  (let ([project-fn (get 'project (list (type-tag x)))])
+    (if project-fn
+        (let ([projected-rst (project-fn (contents x))])
+          (if (equ? (raise projected-rst) x)
+              (drop projected-rst)
+              x))
+        x)))
+
 (define (apply-generic op . args)
 
   (define type-tags (map type-tag args))
@@ -133,11 +146,12 @@
 
   (let ([proc (get op type-tags)])
     (if proc
-        (apply proc (map contents args))
+        (drop (apply proc (map contents args)))
         (let ([highest-type (get-highest-type type-tags)])
           (let ([try-raised-rst (raise-to-common
                                  highest-type)])
             (if try-raised-rst
-                try-raised-rst
+                (drop try-raised-rst)
                 (no-method type-tags)))))))
+
 (#%provide apply-generic)

@@ -128,6 +128,8 @@
        (lambda (r a) (tag (make-from-mag-ang r a))))
   (put 'equ? '(complex complex) equ?)
   (put '=zero? '(complex) =zero?)
+
+  (put 'project '(complex) (lambda (x) ('real (real-part x))))
   (put 'raise
        '(real)
        (lambda (x)

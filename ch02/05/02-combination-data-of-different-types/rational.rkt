@@ -58,9 +58,13 @@
   (put 'equ? '(rational rational) equ?)
   ;; apply-generic 只能处理 list, 所以给他包一下
   (put '=zero? '(rational) =zero?)
-  (put 'raise
-       '(integer)
-       (lambda (x) (make-rational x 1)))
+  (put 'raise '(integer) (lambda (x) (make-rational x 1)))
+
+  ;; project 会被 apply-generic 使用，所以会被自动解 tag，这里的 x 一定是 content 数据
+  (put 'project
+       '(rational)
+       (lambda (x)
+         ('integer (round (/ (numer x) (denom x))))))
 
   ;; 而 make 并不会被 apply-generic 使用, 所以倒是不用包装
   (put 'make 'rational (lambda (n d) (tag (make-rat n d))))
@@ -73,8 +77,6 @@
   ((get 'make 'rational) n d))
 (define (integer->rational n)
   (make-rational (contents n) 1))
-(put-coercion 'integer
-              'rational
-              integer->rational)
+(put-coercion 'integer 'rational integer->rational)
 
 (#%provide install-rational-package make-rational)
