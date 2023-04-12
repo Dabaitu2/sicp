@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 (#%require "./coercion.rkt")
@@ -36,7 +36,7 @@
        (lambda (r a) (tag (make-from-mag-ang r a))))
   'done)
 
-;; 通过词法作用域名，我们规避了重名问题
+;; 通过词法作用域，我们规避了重名问题
 (define (install-polar-package)
   ;; internal procedures
   (define (magnitude z)
@@ -129,7 +129,7 @@
   (put 'equ? '(complex complex) equ?)
   (put '=zero? '(complex) =zero?)
 
-  (put 'project '(complex) (lambda (x) ('real (real-part x))))
+  (put 'project '(complex) (lambda (x) (attach-tag 'real (real-part x))))
   (put 'raise
        '(real)
        (lambda (x)

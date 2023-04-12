@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 ;; (#%require "./coercion.rkt")
@@ -97,15 +97,17 @@
 
 (define (equ? x y)
   (apply-generic 'equ? x y))
-(define (raise x)
-  (apply-generic 'raise x))
+
 (define (drop x)
   (let ([project-fn (get 'project (list (type-tag x)))])
     (if project-fn
         (let ([projected-rst (project-fn (contents x))])
-          (if (equ? (raise projected-rst) x)
-              (drop projected-rst)
-              x))
+          (let ([raise-fn (get 'raise
+                               (list (type-tag
+                                      projected-rst)))])
+            (if (equ? (raise-fn projected-rst) x)
+                (drop projected-rst)
+                x)))
         x)))
 
 (define (apply-generic op . args)
@@ -145,13 +147,18 @@
             #f))))
 
   (let ([proc (get op type-tags)])
+    (define is_raise_or_equ
+      (or (eq? op 'raise) (eq? op 'equ?)))
     (if proc
-        (drop (apply proc (map contents args)))
+        (let ([res (apply proc (map contents args))])
+          (if is_raise_or_equ (drop res) res))
         (let ([highest-type (get-highest-type type-tags)])
           (let ([try-raised-rst (raise-to-common
                                  highest-type)])
             (if try-raised-rst
-                (drop try-raised-rst)
+                (if is_raise_or_equ
+                    (drop try-raised-rst)
+                    try-raised-rst)
                 (no-method type-tags)))))))
 
-(#%provide apply-generic)
+(#%provide apply-generic drop)

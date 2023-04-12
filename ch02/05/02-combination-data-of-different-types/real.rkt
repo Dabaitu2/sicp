@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 (#%require "./coercion.rkt")
@@ -13,7 +13,7 @@
   (put 'equ? '(real real) =)
   (put '=zero? '(real) (lambda (x) (= x 0)))
 
-  (put 'project '(real) (lambda (x) ('integer (round x))))
+  (put 'project '(real) (lambda (x) (attach-tag 'integer (round x))))
   (put 'raise
        '(rational)
        (lambda (x) (tag (/ (apply (get 'numer '(rational)) (list (contents x)))

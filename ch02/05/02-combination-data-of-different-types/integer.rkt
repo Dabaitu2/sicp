@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 
@@ -15,7 +15,7 @@
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'make 'integer (lambda (x)
                         (if (number? x)
-                            (round x)
+                            (tag (round x))
                             (error "arg is not number -- make-integer" x))))
   'done)
 

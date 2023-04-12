@@ -1,8 +1,9 @@
-#lang sicp
+#lang racket
 
 ;; Tagged data
 (define (attach-tag type-tag contents)
-  (if (number? contents) contents (cons type-tag contents)))
+  (cons type-tag contents))
+;; (if (number? contents) contents (cons type-tag contents)))
 
 (define (type-tag datum)
   (cond

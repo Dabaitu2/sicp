@@ -1,4 +1,4 @@
-#lang sicp
+#lang racket
 
 (#%require "./generic-tools.rkt")
 (#%require "./complex.rkt")
@@ -6,7 +6,6 @@
 (#%require "./rational.rkt")
 (#%require "./integer.rkt")
 (#%require "./real.rkt")
-
 
 (install-integer-package)
 (install-rational-package)
@@ -34,6 +33,7 @@
 
 (define c1 (make-complex-from-real-imag 3 4))
 (define c2 (make-complex-from-mag-ang 2 1))
+
 
 ;; 通用的方法适用于多种数据类型, 甚至是内部类型
 (add 7 b)
