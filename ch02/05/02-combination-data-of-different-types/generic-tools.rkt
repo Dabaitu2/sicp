@@ -147,16 +147,16 @@
             #f))))
 
   (let ([proc (get op type-tags)])
-    (define is_raise_or_equ
-      (or (eq? op 'raise) (eq? op 'equ?)))
+    (define is_not_multiple_op 
+      (> 1 (length type-tags)))
     (if proc
         (let ([res (apply proc (map contents args))])
-          (if is_raise_or_equ (drop res) res))
+          (if is_not_multiple_op (drop res) res))
         (let ([highest-type (get-highest-type type-tags)])
           (let ([try-raised-rst (raise-to-common
                                  highest-type)])
             (if try-raised-rst
-                (if is_raise_or_equ
+                (if is_not_multiple_op
                     (drop try-raised-rst)
                     try-raised-rst)
                 (no-method type-tags)))))))

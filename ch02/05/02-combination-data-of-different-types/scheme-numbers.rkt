@@ -11,6 +11,8 @@
   (put 'sub '(scheme-number scheme-number) -)
   (put 'mul '(scheme-number scheme-number) *)
   (put 'div '(scheme-number scheme-number) /)
+  (put 'cosine '(scheme-number) (lambda (x) (tag (cos x))))
+  (put 'sine '(scheme-number) (lambda (x) (tag (sin x))))
   (put 'equ? '(scheme-number scheme-number) =)
   (put '=zero? '(scheme-number) (lambda (x) (= x 0)))
   (put 'make 'scheme-number (lambda (x) (tag x)))

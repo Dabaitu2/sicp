@@ -55,16 +55,30 @@
   (put 'div
        '(rational rational)
        (lambda (x y) (tag (div-rat x y))))
+
+  ;; it's hard to project a real number (calculated by original cos) into rational
+  ;; I do believe there's a approximate way, but it's beyond what we should focus in this chapter
+  ;; So I will just put result into real domain
+  (put 'cosine
+       '(rational)
+       (lambda (n) (attach-tag 'real  (cos (/ (numer n) (denom n))))))
+  (put 'cosine
+       '(rational)
+       (lambda (n) (attach-tag 'real (sin (/ (numer n) (denom n))))))
+
   (put 'equ? '(rational rational) equ?)
   ;; apply-generic 只能处理 list, 所以给他包一下
   (put '=zero? '(rational) =zero?)
-  (put 'raise '(integer) (lambda (x) (make-rational (contents x) 1)))
+  (put 'raise
+       '(integer)
+       (lambda (x) (make-rational (contents x) 1)))
 
   ;; project 会被 apply-generic 使用，所以会被自动解 tag，这里的 x 一定是 content 数据
   (put 'project
        '(rational)
        (lambda (x)
-         (attach-tag 'integer (round (/ (numer x) (denom x))))))
+         (attach-tag 'integer
+                     (round (/ (numer x) (denom x))))))
 
   ;; 而 make 并不会被 apply-generic 使用, 所以倒是不用包装
   (put 'make 'rational (lambda (n d) (tag (make-rat n d))))

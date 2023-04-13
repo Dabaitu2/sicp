@@ -11,12 +11,17 @@
   (put 'sub '(integer integer) -)
   (put 'mul '(integer integer) *)
   (put 'div '(integer integer) /)
+  (put 'cosine '(real) (lambda (x) (tag (round (cos x)))))
+  (put 'sine '(real) (lambda (x) (tag (round (sin x)))))
   (put 'equ? '(integer integer) =)
   (put '=zero? '(integer) (lambda (x) (= x 0)))
-  (put 'make 'integer (lambda (x)
-                        (if (number? x)
-                            (tag (round x))
-                            (error "arg is not number -- make-integer" x))))
+  (put 'make
+       'integer
+       (lambda (x)
+         (if (number? x)
+             (tag (round x))
+             (error "arg is not number -- make-integer"
+                    x))))
   'done)
 
 ;; 这里不能使用 apply-generic 是因为这里的场景下
