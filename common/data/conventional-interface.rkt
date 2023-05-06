@@ -25,6 +25,13 @@
         (for-each proc items-cdr)
         #t)))
 
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest) result
+        (iter (op result (car rest))
+              (cdr rest))))
+  (iter initial sequence))
+
 ;; 实现 accumulate (reduce / fold)
 (define (accumulate op initial sequence)
   (if (null? sequence)
@@ -58,6 +65,7 @@
 (#%provide map
            flatmap
            filter
+           fold-left
            for-each
            accumulate
            accumulate-n

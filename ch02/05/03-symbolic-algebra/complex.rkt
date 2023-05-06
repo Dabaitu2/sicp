@@ -17,7 +17,7 @@
     (cons x y))
   (define (magnitude z)
     (sqrt (add (square (real-part z))
-             (square (imag-part z)))))
+               (square (imag-part z)))))
   (define (angle z)
     (atan (imag-part z) (real-part z)))
   (define (make-from-mag-ang r a)
@@ -122,6 +122,10 @@
   (put 'div
        '(complex complex)
        (lambda (z1 z2) (tag (div-complex z1 z2))))
+  (put 'negate
+       '(complex)
+       (lambda (z) (make-from-real-imag (- (real-part z))
+                                        (- (imag-part z)))))
   (put 'make-from-real-imag
        'complex
        (lambda (x y) (tag (make-from-real-imag x y))))

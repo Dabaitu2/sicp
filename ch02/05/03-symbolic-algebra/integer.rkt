@@ -11,6 +11,7 @@
   (put 'sub '(integer integer) -)
   (put 'mul '(integer integer) *)
   (put 'div '(integer integer) /)
+  (put 'negate '(integer) (lambda (x) (tag (- x))))
   (put 'cosine '(real) (lambda (x) (tag (round (cos x)))))
   (put 'sine '(real) (lambda (x) (tag (round (sin x)))))
   (put 'equ? '(integer integer) =)

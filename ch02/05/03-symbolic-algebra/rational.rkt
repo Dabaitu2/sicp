@@ -55,6 +55,10 @@
   (put 'div
        '(rational rational)
        (lambda (x y) (tag (div-rat x y))))
+  (put 'negate
+       '(rational)
+       (lambda (x) (make-rat (- (numer x))
+                             (- (denom x)))))
 
   ;; it's hard to project a real number (calculated by original cos) into rational
   ;; I do believe there's a approximate way, but it's beyond what we should focus in this chapter

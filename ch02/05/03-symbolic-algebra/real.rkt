@@ -10,6 +10,9 @@
   (put 'sub '(real real) -)
   (put 'mul '(real real) *)
   (put 'div '(real real) /)
+  (put 'negate
+       '(real)
+       (lambda (x) (tag (- x))))
   (put 'equ? '(real real) =)
   (put '=zero? '(real) (lambda (x) (= x 0)))
 

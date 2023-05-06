@@ -12,6 +12,7 @@
 (define (add x y) (apply-generic 'add x y))
 (define (mul x y) (apply-generic 'mul x y))
 (define (div x y) (apply-generic 'div x y))
+(define (negate x) (apply-generic 'negate x))
 (define (equ? x y) (apply-generic 'equ? x y))
 (define (=zero? x) (apply-generic '=zero? x))
 (define (raise x) (apply-generic 'raise x))
@@ -19,4 +20,4 @@
 (define (cosine x) (apply-generic 'cosine x))
 
 
-(#%provide sub add mul div equ? =zero? raise sine cosine)
+(#%provide sub add mul div equ? =zero? raise sine cosine negate)

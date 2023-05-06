@@ -93,6 +93,9 @@
     [(eq? type 'rational) 1]
     [(eq? type 'real) 2]
     [(eq? type 'complex) 3]
+    [(eq? type 'term) 4]
+    [(eq? type 'sparse) 5]
+    [(eq? type 'dense) 6]
     [else (error "Invalid type: LEVEL" type)]))
 
 (define (equ? x y)
@@ -147,7 +150,7 @@
             #f))))
 
   (let ([proc (get op type-tags)])
-    (define is_not_multiple_op 
+    (define is_not_multiple_op
       (> 1 (length type-tags)))
     (if proc
         (let ([res (apply proc (map contents args))])
