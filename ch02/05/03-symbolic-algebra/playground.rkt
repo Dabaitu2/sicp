@@ -35,13 +35,21 @@
 (add c1 7)
 (=zero? (make-rational 2 4))
 
-(define tlist
+(define slist
   (accumulate
    adjoin-term
    (attach-tag 'sparse '())
    (list (make-term 1 3) (make-term 2 2) (make-term 3 1))))
-(display tlist)
 
-(define mpoly (make-polynomial 'x tlist))
+(define dlist
+  (accumulate
+   adjoin-term
+   (attach-tag 'dense '())
+   (list (make-term 1 3) (make-term 2 2) (make-term 3 1))))
+
+(display slist)
+(display dlist)
+
+(define mpoly (make-polynomial 'x dlist))
 (display mpoly)
 (display c2)
