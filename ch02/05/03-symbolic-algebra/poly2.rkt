@@ -32,6 +32,8 @@
 
 ;; 同时支持稠密多项式和系数多项式两种表示方式，参照 complex 的实现
 ;; 稠密多项式
+;; 内部使用的 api 由于通常会被 apply-generic 使用, 因此会把 tag 剥离掉
+;; 因此需要注意不可以和其他使用 apply-generic 的元素混用,
 (define (install-dense-termlist-package)
   ;; type defination
   (define (tag termlist)
@@ -52,10 +54,9 @@
   ;; apis
   (define (empty-termlist? term-list)
     (null? term-list))
+
   (define (adjoin-term term term-list)
-    (if (empty-termlist? term-list)
-        term
-        (list term term-list)))
+    (cons ((get 'coeff '(term)) term) term-list))
 
   (define (add-terms L1 L2)
     (cond

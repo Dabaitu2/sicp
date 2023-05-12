@@ -15,18 +15,17 @@
 ;; 此外，这里的 term 的最低次数为 0, 不支持负数次数
 (define (adjoin-term term term-list)
   (if (emtpy-termlist? term-list)
-      term
-      (list term term-list)))
-
+      (coeff term)
+      (list (coeff term) term-list)))
 
 (define (first-term termlist)
   (make-term (- (length termlist)) (car termlist)))
 
-(define (rest-term term-list) (cdr term-list))
+(define (rest-term term-list)
+  (cdr term-list))
 
 (define (emtpy-termlist? term-list)
   (null? term-list))
-
 
 ;; 这种做法 虽然并不完全贴合题意,  但就不需要做兼容了，不过我们还是好好做题，采用上面的做法
 ;; (define (first-term term-list)
