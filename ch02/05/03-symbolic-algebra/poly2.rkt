@@ -47,7 +47,7 @@
 
   ;; selectors
   (define (first-term termlist)
-    (make-term (- (length termlist)) (car termlist)))
+    (make-term (- (length termlist) 1) (car termlist)))
   (define (rest-terms term-list)
     (cdr term-list))
 
@@ -56,7 +56,16 @@
     (null? term-list))
 
   (define (adjoin-term term term-list)
-    (cons ((get 'coeff '(term)) term) term-list))
+    (let ([term-order (order term)]
+          [max-list-order (sub (length term-list) 1)])
+      (cond
+        [(= term-order max-list-order)
+         (cons (add (coeff term)
+                    (coeff (first-term term-list)))
+               (rest-terms term-list))]
+        [(> term-order max-list-order)
+         (adjoin-term term (cons 0 term-list))]
+        [else (adjoin-term term (rest-terms term-list))])))
 
   (define (add-terms L1 L2)
     (cond
@@ -81,29 +90,72 @@
         (the-empty-termlist)
         (add-terms
          (mul-term-by-all-terms (first-term L1) L2)
-         (mul-terms (rest-terms) L2))))
+         (mul-terms (rest-terms L1) L2))))
 
   (define (mul-term-by-all-terms t1 L)
     (if (empty-termlist? L)
         (the-empty-termlist)
         (let ([t2 (first-term L)])
           (adjoin-term
-           (make-term (+ (order t1) (order t2))
+           (make-term (add (order t1) (order t2))
                       (mul (coeff t1) (coeff t2)))
            (mul-term-by-all-terms t1 (rest-terms L))))))
 
   (define (negate-terms termlist)
     (if (empty-termlist? termlist)
-        the-empty-termlist
+        (the-empty-termlist)
         (let ([t (first-term termlist)])
           (adjoin-term
            (make-term (order t) (negate (coeff t)))
            (negate-terms (rest-terms termlist))))))
 
-  (put 'adjoin-term
-       '(term dense)
-       (lambda (term termlist)
-         (tag (adjoin-term term termlist))))
+  (define (sub-terms L1 L2)
+    (add-terms L1 (negate-terms L2)))
+
+  (define (div-terms L1 L2)
+    (if (empty-termlist? L1)
+        (list (the-empty-termlist) (the-empty-termlist))
+        (let ([t1 (first-term L1)] [t2 (first-term L2)])
+          (if (> (order t2) (order t1))
+              ;; if order does not meet the condition
+              ;; we will take the dividend as the final remainder
+              (list (the-empty-termlist) L1)
+              ;; c coeff
+              ;; o order
+              (let ([new-c (div (coeff t1) (coeff t2))]
+                    [new-o (- (order t1) (order t2))])
+                (let ([rest-of-result
+                       ;; 递归计算部分
+                       (div-terms
+                        (sub-terms L1
+                                   (mul-term-by-all-terms
+                                    (make-term new-o new-c)
+                                    L2))
+                        L2)])
+                  ;; 组合形成完整结果
+                  (list (adjoin-term (make-term new-o new-c)
+                                     (car rest-of-result))
+                        (cadr rest-of-result))))))))
+
+  (put
+   'adjoin-term
+   '(term dense)
+   (lambda (_term term-list)
+     (let ([term-order ((get 'order '(term)) _term)]
+           [term-coeff ((get 'coeff '(term)) _term)]
+           [max-list-order (sub (length term-list) 1)])
+       (let ([term (make-term term-order term-coeff)])
+         (tag (cond
+                [(= term-order max-list-order)
+                 (cons ((add term-coeff
+                             (coeff (first-term term-list)))
+                        (rest-terms term-list)))]
+                [(> term-order max-list-order)
+                 (adjoin-term term (cons 0 term-list))]
+                [else
+                 (adjoin-term term
+                              (rest-terms term-list))]))))))
+
   (put 'add-terms
        '(dense dense)
        (lambda (T1 T2) (tag (add-terms T1 T2))))
@@ -111,8 +163,15 @@
        '(dense dense)
        (lambda (T1 T2) (tag (mul-terms T1 T2))))
   (put 'negate-terms
+       '(dense)
+       (lambda (T) (tag (negate-terms T))))
+  (put 'sub-terms
        '(dense dense)
-       (lambda (T1 T2) (tag (negate-terms T1 T2))))
+       (lambda (T1 T2) (tag (sub-terms T1 T2))))
+  (put 'div-terms
+       '(dense dense)
+       (lambda (T1 T2) (tag (div-terms T1 T2))))
+
   (put 'first-term 'dense first-term)
   (put 'rest-terms 'dense rest-terms)
   (put 'empty-termlist? 'dense empty-termlist?)
@@ -169,24 +228,27 @@
     (null? term-list))
 
   ;; apis
-  (define (adjoin-term term term-list)
-    (if (=zero? ((get 'coeff '(term)) term))
-        term-list
-        (cons term term-list)))
+  ;; (define (adjoin-term term term-list)
+  ;;   (if (=zero? (coeff term))
+  ;;       term-list
+  ;;       (cons term term-list)))
 
   ;; 如果想要支持次数乱序的多项式可以考虑使用下面的实现
-  ;; (define (adjoin-term term term-list)
-  ;;   (cond
-  ;;     [(=zero? (coeff term))
-  ;;      (if (null? term-list) the-empty-termlist term-list)]
-  ;;     [(null? term-list) (list term)]
-  ;;     [(= (order term) (order (first-term term-list)))
-  ;;      term-list]
-  ;;     [(< (order term) (order (first-term term-list)))
-  ;;      (cons term term-list)]
-  ;;     [else
-  ;;      (cons (first-term term)
-  ;;            (adjoin-term term (rest-terms term-list)))]))
+  (define (adjoin-term term term-list)
+    (cond
+      [(=zero? (coeff term)) term-list]
+      [(empty-termlist? term-list) (cons term term-list)]
+      [(= (order term) (order (first-term term-list)))
+       (cons (make-term (order term)
+                        (add (coeff term)
+                             (coeff (first-term
+                                     term-list))))
+             (rest-terms term-list))]
+      [(< (order term) (order (first-term term-list)))
+       (cons term term-list)]
+      [else
+       (cons (first-term term-list)
+             (adjoin-term term (rest-terms term-list)))]))
 
   (define (add-terms L1 L2)
     (cond
@@ -211,7 +273,7 @@
         (the-empty-termlist)
         (add-terms
          (mul-term-by-all-terms (first-term L1) L2)
-         (mul-terms (rest-terms) L2))))
+         (mul-terms (rest-terms L1) L2))))
 
   (define (mul-term-by-all-terms t1 L)
     (if (empty-termlist? L)
@@ -230,10 +292,63 @@
            (make-term (order t) (negate (coeff t)))
            (negate-terms (rest-terms termlist))))))
 
-  (put 'adjoin-term
-       '(term sparse)
-       (lambda (term termlist)
-         (tag (adjoin-term term termlist))))
+  (define (sub-terms L1 L2)
+    (add-terms L1 (negate-terms L2)))
+
+  (define (div-terms L1 L2)
+    (if (empty-termlist? L1)
+        (list (the-empty-termlist) (the-empty-termlist))
+        (let ([t1 (first-term L1)] [t2 (first-term L2)])
+          (if (> (order t2) (order t1))
+              ;; if order does not meet the condition
+              ;; we will take the dividend as the final remainder
+              (list (the-empty-termlist) L1)
+              ;; c coeff
+              ;; o order
+              (let ([new-c (div (coeff t1) (coeff t2))]
+                    [new-o (- (order t1) (order t2))])
+                (let ([rest-of-result
+                       ;; 递归计算部分
+                       (div-terms
+                        (sub-terms L1
+                                   (mul-term-by-all-terms
+                                    (make-term new-o new-c)
+                                    L2))
+                        L2)])
+                  ;; 组合形成完整结果
+                  (list (adjoin-term (make-term new-o new-c)
+                                     (car rest-of-result))
+                        (cadr rest-of-result))))))))
+
+  (put
+   'adjoin-term
+   '(term sparse)
+   (lambda (_term term-list)
+     (let ([term-order ((get 'order '(term)) _term)]
+           [term-coeff ((get 'coeff '(term)) _term)])
+       (let ([term (make-term term-order term-coeff)])
+         (tag
+          (cond
+            [(=zero? term-coeff) term-list]
+            [(empty-termlist? term-list)
+             (cons (make-term term-order term-coeff)
+                   term-list)]
+            [else
+             (let ([next-term (first-term term-list)]
+                   [rest-term-list (rest-terms term-list)])
+               (cond
+                 [(= term-order (order next-term))
+                  (cons (make-term term-order
+                                   (add term-coeff
+                                        (coeff next-term)))
+                        rest-term-list)]
+                 [(< term-order (order next-term))
+                  (cons term term-list)]
+                 [else
+                  (cons next-term
+                        (adjoin-term
+                         term
+                         rest-term-list))]))]))))))
 
   (put 'add-terms
        '(sparse sparse)
@@ -242,8 +357,15 @@
        '(sparse sparse)
        (lambda (T1 T2) (tag (mul-terms T1 T2))))
   (put 'negate-terms
+       '(sparse)
+       (lambda (T) (tag (negate-terms T))))
+  (put 'sub-terms
        '(sparse sparse)
-       (lambda (T1 T2) (tag (negate-terms T1 T2))))
+       (lambda (T1 T2) (tag (sub-terms T1 T2))))
+  (put 'div-terms
+       '(sparse sparse)
+       (lambda (T1 T2) (tag (div-terms T1 T2))))
+
   (put 'first-term 'sparse first-term)
   (put 'rest-terms 'sparse rest-terms)
   (put 'empty-termlist? 'sparse empty-termlist?)
@@ -298,6 +420,8 @@
     (apply-generic 'mul-terms L1 L2))
   (define (negate-terms L)
     (apply-generic 'negate-terms L))
+  (define (div-terms L1 L2)
+    (apply-generic 'div-terms L1 L2))
   (define (empty-termlist? L)
     (apply-generic 'empty-termlist? L))
   (define (first-term L)
@@ -333,7 +457,17 @@
     (zero-terms? (term-list poly)))
 
   (define (sub-poly p1 p2)
-    (add-poly p1 (negate p2)))
+    (add-poly p1
+              (contents ((get 'negate '(polynomial)) p2))))
+
+  (define (div-poly p1 p2)
+    (if (same-variable? (variable? p1) (variable? p2))
+        (let ([results (div-terms (term-list p1)
+                                  (term-list p2))])
+          (list (make-poly (variable p1) (car results))
+                (cadr results)))
+        (error "Polys not in same var -- MUL-POLY"
+               (list p1 p2))))
 
   (define (tag p)
     (attach-tag 'polynomial p))
@@ -349,6 +483,10 @@
   (put 'sub
        '(polynomial polynomial)
        (lambda (p1 p2) (tag (sub-poly p1 p2))))
+
+  (put 'div
+       '(polynomial polynomial)
+       (lambda (p1 p2) (tag (div-poly p1 p2))))
 
   (put 'negate
        '(polynomial)
