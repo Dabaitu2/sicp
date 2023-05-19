@@ -102,8 +102,8 @@
              (div-terms (term-list p1)
                         (term-list p2)))
             )
-        (list (make-poly (variable p1) (car results))
-              (cadr results)))
+        (list (make-poly (variable p1) (cadr results))
+              (caddr results)))
       (error "Polys not in same var -- MUL-POLY"
              (list p1 p2)))
   )

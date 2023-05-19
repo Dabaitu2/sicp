@@ -110,7 +110,12 @@
            (negate-terms (rest-terms termlist))))))
 
   (define (sub-terms L1 L2)
-    (add-terms L1 (negate-terms L2)))
+    (let ([terms (add-terms L1 (negate-terms L2))])
+      (define (simplify-iter source)
+        (if (=zero? (coeff (first-term source)))
+            (simplify-iter (rest-terms source))
+            source))
+      (simplify-iter terms)))
 
   (define (div-terms L1 L2)
     (if (empty-termlist? L1)
@@ -196,7 +201,7 @@
                (parse-iter next-order
                            rest
                            (cons (coeff term) result))]))))
-    (parse-iter 0 sparselist '()))
+    (parse-iter 0 (reverse sparselist) '()))
 
   ;; supporting raised from sparse so they can work together
   (put 'raise
@@ -244,7 +249,7 @@
                              (coeff (first-term
                                      term-list))))
              (rest-terms term-list))]
-      [(< (order term) (order (first-term term-list)))
+      [(> (order term) (order (first-term term-list)))
        (cons term term-list)]
       [else
        (cons (first-term term-list)
@@ -293,7 +298,12 @@
            (negate-terms (rest-terms termlist))))))
 
   (define (sub-terms L1 L2)
-    (add-terms L1 (negate-terms L2)))
+    (let ([terms (add-terms L1 (negate-terms L2))])
+      (define (simplify-iter source)
+        (if (=zero? (coeff (first-term source)))
+            (simplify-iter (rest-terms source))
+            source))
+      (simplify-iter terms)))
 
   (define (div-terms L1 L2)
     (if (empty-termlist? L1)
@@ -342,7 +352,7 @@
                                    (add term-coeff
                                         (coeff next-term)))
                         rest-term-list)]
-                 [(< term-order (order next-term))
+                 [(> term-order (order next-term))
                   (cons term term-list)]
                  [else
                   (cons next-term
@@ -384,7 +394,7 @@
                  rest
                  (cons (make-term curr-order coeff)
                        result))))))
-    (parse-iter 0 denselist '()))
+    (parse-iter 0 (reverse denselist) '()))
 
   (put 'project
        '(dense)
@@ -464,8 +474,9 @@
     (if (same-variable? (variable? p1) (variable? p2))
         (let ([results (div-terms (term-list p1)
                                   (term-list p2))])
-          (list (make-poly (variable p1) (car results))
-                (cadr results)))
+          (list
+           (tag (make-poly (variable p1) (cadr results)))
+           (tag (make-poly (variable p1) (caddr results)))))
         (error "Polys not in same var -- MUL-POLY"
                (list p1 p2))))
 
@@ -486,7 +497,7 @@
 
   (put 'div
        '(polynomial polynomial)
-       (lambda (p1 p2) (tag (div-poly p1 p2))))
+       (lambda (p1 p2) (div-poly p1 p2)))
 
   (put 'negate
        '(polynomial)
