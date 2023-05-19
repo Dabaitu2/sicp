@@ -7,7 +7,7 @@
 它表现为 $5x^2 + 3x + 7$, 即未定元 (indeterminate）是 x 的多项式
 分析其定义：
 
-> We will define a poly- nomial to be a sum of terms, each of which is either a coefficient,
+> We will define a polynomial to be a sum of terms, each of which is either a coefficient,
 > a power of the indeterminate, or a product of a coefficient and a power of the indeterminate.
 > A coefficient is defined as an algebraic expression that is not dependent upon the indeterminate
 > of the polynomial.
