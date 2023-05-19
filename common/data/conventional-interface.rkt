@@ -2,6 +2,26 @@
 
 (define nil '())
 
+(define (deep-reverse items)
+  (define (iter items result)
+    (if (null? items)
+        result
+        (iter (cdr items)
+              (let ([first (car items)])
+                (cons (if (pair? first)
+                          (iter first nil)
+                          (car items))
+                      result)))))
+  (iter items nil))
+
+(define (reverse items)
+  (define (reverse-iter items result)
+    (if (null? items)
+        result
+        (reverse-iter (cdr items)
+                      (cons (car items) result))))
+  (reverse-iter items nil))
+
 ;; 实现 map
 (define (map proc items)
   (if (null? items)
@@ -69,4 +89,6 @@
            for-each
            accumulate
            accumulate-n
-           enumerate-interval)
+           enumerate-interval
+           reverse
+           deep-reverse)

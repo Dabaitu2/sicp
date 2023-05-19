@@ -39,17 +39,47 @@
   (accumulate
    adjoin-term
    (attach-tag 'sparse '())
-   (list (make-term 1 3) (make-term 2 2) (make-term 3 1))))
+   (list (make-term 2 1) (make-term 1 2) (make-term 0 3))))
 
 (define dlist
   (accumulate
    adjoin-term
    (attach-tag 'dense '())
-   (list (make-term 1 3) (make-term 2 2) (make-term 3 1))))
+   (list (make-term 2 1) (make-term 1 2) (make-term 0 3))))
 
-(display slist)
-(display dlist)
+(define slist2
+  (accumulate
+   adjoin-term
+   (attach-tag 'sparse '())
+   (list (make-term 5 1) (make-term 0 (sub 0 1)))))
+
+(define dlist2
+  (accumulate
+   adjoin-term
+   (attach-tag 'dense '())
+   (list (make-term 2 1) (make-term 0 (sub 0 1)))))
+
+;; (display slist)
+;; (newline)
+;; (display dlist)
 
 (define mpoly (make-polynomial 'x dlist))
-(display mpoly)
-(display c2)
+;; (display mpoly)
+;; (newline)
+;; (display c2)
+
+;; (newline)
+;; (display mpoly)
+;; (newline)
+;; (display mpoly)
+;; (newline)
+(add mpoly mpoly)
+(sub mpoly mpoly)
+(mul mpoly mpoly)
+
+(define dpoly (make-polynomial 'x dlist2))
+(define spoly (make-polynomial 'x slist2))
+
+;; (display dpoly)
+;; (display spoly)
+(div spoly dpoly)
