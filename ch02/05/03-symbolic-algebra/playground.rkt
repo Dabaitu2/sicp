@@ -9,7 +9,7 @@
 (#%require "./api.rkt")
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
-(#%require "./poly2.rkt")
+(#%require "./poly.rkt")
 
 ;; Install number types
 (install-integer-package)
