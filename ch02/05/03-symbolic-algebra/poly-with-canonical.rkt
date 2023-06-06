@@ -21,14 +21,17 @@
   ;; 要想能够在 apply-generic 中使用此类方法就必须加一个括号
   (put 'order '(term) order)
   (put 'coeff '(term) coeff)
+  (put 'equ?
+       '(term term)
+       (lambda (x y)
+         (and (= (coeff x) (coeff y))
+              (= (order x) (order y)))))
 
   (put 'make-term
        'term
        (lambda (order coeff) (tag (make-term order coeff))))
 
-  (put 'raise '(complex)
-       (lambda (x)
-         (tag (make-term 0 x))))
+  (put 'raise '(complex) (lambda (x) (tag (make-term 0 x))))
 
   'done)
 
@@ -147,6 +150,15 @@
                                      (car rest-of-result))
                         (cadr rest-of-result))))))))
 
+  (define (_equ? x y)
+    (cond
+      [(and (null? x) (null? y)) #t]
+      [(= (length x) (length y))
+       (if (equ? (car x) (car y))
+           (_equ? (cdr x) (cdr y))
+           #f)]
+      [else #f]))
+
   (put
    'adjoin-term
    '(term dense)
@@ -185,6 +197,10 @@
   (put 'first-term 'dense first-term)
   (put 'rest-terms 'dense rest-terms)
   (put 'empty-termlist? 'dense empty-termlist?)
+  (put 'first-term '(dense) first-term)
+  (put 'rest-terms '(dense) rest-terms)
+  (put 'empty-termlist? '(dense) empty-termlist?)
+  (put 'equ? '(dense dense) _equ?)
 
   (define (make-dense-from-sparse sparselist)
     (define (parse-iter curr-order source result)
@@ -335,6 +351,15 @@
                                      (car rest-of-result))
                         (cadr rest-of-result))))))))
 
+  (define (_equ? x y)
+    (cond
+      [(and (null? x) (null? y)) #t]
+      [(= (length x) (length y))
+       (if (equ? (car x) (car y))
+           (_equ? (cdr x) (cdr y))
+           #f)]
+      [else #f]))
+
   (put
    'adjoin-term
    '(term sparse)
@@ -385,6 +410,11 @@
   (put 'rest-terms 'sparse rest-terms)
   (put 'empty-termlist? 'sparse empty-termlist?)
 
+  (put 'first-term '(sparse) first-term)
+  (put 'rest-terms '(sparse) rest-terms)
+  (put 'empty-termlist? '(sparse) empty-termlist?)
+  (put 'equ? '(sparse sparse) _equ?)
+
   (define (make-sparse-from-dense denselist)
     (define (parse-iter curr-order source result)
       (if (null? source)
@@ -401,7 +431,8 @@
                        result))))))
     (parse-iter 0 (reverse denselist) '()))
 
-  (put 'raise '(term)
+  (put 'raise
+       '(term)
        (lambda (x)
          (tag (adjoin-term x (the-empty-termlist)))))
 
@@ -449,24 +480,48 @@
     (apply-generic 'rest-terms L))
   (define (coeff term)
     (apply-generic 'coeff term))
+  (define (order term)
+    (apply-generic 'order term))
 
   ;; 多项式相加的本质就是每一个对应 term 相加 的组合
   ;; 对应的 term 应该具有对应的 乘方数
+  ;; new logic: 对于持有特殊未知数 variable 的 poly, 一定是 raise 上来的 datum,
+  ;; 可以支持其直接相加/乘 (进而支持除法和减法)，并转换为被加 poly 的 variable
   (define (add-poly p1 p2)
-    (if (same-variable? (variable p1) (variable p2))
-        (make-poly (variable p1)
-                   (add-terms (term-list p1)
-                              (term-list p2)))
-        (error "Polys not in same var -- ADD-POLY"
-               (list p1 p2))))
+    (cond
+      [(eq? '$ (variable p1))
+       (make-poly (variable p2)
+                  (add-terms (term-list p1)
+                             (term-list p2)))]
+      [(eq? '$ (variable p2))
+       (make-poly (variable p1)
+                  (add-terms (term-list p1)
+                             (term-list p2)))]
+      [else
+       (if (same-variable? (variable p1) (variable p2))
+           (make-poly (variable p1)
+                      (add-terms (term-list p1)
+                                 (term-list p2)))
+           (error "Polys not in same var -- ADD-POLY"
+                  (list p1 p2)))]))
 
   (define (mul-poly p1 p2)
-    (if (same-variable? (variable p1) (variable p2))
-        (make-poly (variable p1)
-                   (mul-terms (term-list p1)
-                              (term-list p2)))
-        (error "Polys not in same var -- MUL-POLY"
-               (list p1 p2))))
+    (cond
+      [(eq? '$ (variable p1))
+       (make-poly (variable p2)
+                  (mul-terms (term-list p1)
+                             (term-list p2)))]
+      [(eq? '$ (variable p2))
+       (make-poly (variable p1)
+                  (mul-terms (term-list p1)
+                             (term-list p2)))]
+      [else
+       (if (same-variable? (variable p1) (variable p2))
+           (make-poly (variable p1)
+                      (mul-terms (term-list p1)
+                                 (term-list p2)))
+           (error "Polys not in same var -- MUL-POLY"
+                  (list p1 p2)))]))
 
   (define (zero-poly? poly)
     (define (zero-terms? termlist)
@@ -488,6 +543,10 @@
            (tag (make-poly (variable p1) (caddr results)))))
         (error "Polys not in same var -- MUL-POLY"
                (list p1 p2))))
+
+  (define (_equ? x y)
+    (and (eq? (variable x) (variable y))
+         (equ? (term-list x) (term-list y))))
 
   (define (tag p)
     (attach-tag 'polynomial p))
@@ -514,12 +573,82 @@
          (make-polynomial (variable poly)
                           (negate-terms (term-list poly)))))
 
-
   (put 'make
        'polynomial
        (lambda (var terms) (tag (make-poly var terms))))
   (put '=zero? '(polynomial) zero-poly?)
+  (put 'equ? '(polynomial polynomial) _equ?)
   (put 'term-list '(polynomial) term-list)
+  (put 'raise '(dense) (lambda (x) (tag (make-poly '$ x))))
+
+  (define (order-by-priority p1 p2)
+    (let ([var1 (variable p1)] [var2 (variable p2)])
+      (if (string<? (symbol->string var1)
+                    (symbol->string var2))
+          (cons p1 p2)
+          (cons p2 p1))))
+
+  (define (make-canonical target-var poly)
+    (let ([terms (term-list poly)]
+          [cur-var (variable poly)])
+      (let ([terms-type (type-tag terms)])
+        (if (empty-termlist? terms)
+            (make-poly target-var
+                       (make-empty-termlist-of-type
+                        terms-type))
+            (let ([term (first-term terms)])
+              (add-poly
+               (make-canonical
+                target-var
+                (make-poly cur-var
+                           (attach-tag terms-type
+                                       (rest-terms terms))))
+               (let ([cof (coeff term)] [ord (order term)])
+                 (let ([cof-type (type-tag cof)])
+                   (if (eq? cof-type 'polynomial)
+                       (let ([cof-poly (contents cof)])
+                         (let ([cof-poly-var
+                                (variable cof-poly)])
+                           (mul-poly
+                            (if (eq? cof-poly-var
+                                     target-var)
+                                cof-poly
+                                (make-canonical target-var
+                                                cof-poly))
+                            (make-poly-from-single-term
+                             target-var
+                             cur-var
+                             ord
+                             1
+                             terms-type))))
+                       ;; if coeff is not polynomial, which means this term has no relationship
+                       ;; with target-var at all, we can just use whole terms as the coeff of the new poly with 0 order
+                       (make-poly-from-single-term
+                        target-var
+                        cur-var
+                        ord
+                        cof
+                        terms-type))))))))))
+
+  (define (make-poly-from-single-term target-var
+                                      cur-var
+                                      ord
+                                      cof
+                                      terms-type)
+    (make-poly
+     target-var
+     (adjoin-term
+      (make-term 0
+                 (attach-tag
+                  'polynomial
+                  (make-poly cur-var
+                             (adjoin-term
+                              (make-term ord cof)
+                              (make-empty-termlist-of-type
+                               terms-type)))))
+      (make-empty-termlist-of-type terms-type))))
+
+  (put 'make-canonical 'polynomial make-canonical)
   'done)
 
 (define (make-empty-termlist-of-type type)
@@ -531,10 +660,17 @@
 (define (adjoin-term term termlist)
   (apply-generic 'adjoin-term term termlist))
 
+(define (make-canonical target-var poly)
+  (attach-tag 'polynomial
+              ((get 'make-canonical 'polynomial)
+               target-var
+               (contents poly))))
+
 (#%provide make-polynomial
            make-term
            adjoin-term
            term-list
            the-empty-termlist
            install-polynomial-package
-           make-empty-termlist-of-type)
+           make-empty-termlist-of-type
+           make-canonical)

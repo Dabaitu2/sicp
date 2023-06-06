@@ -19,7 +19,11 @@
     (sqrt (add (square (real-part z))
                (square (imag-part z)))))
   (define (angle z)
-    (atan (imag-part z) (real-part z)))
+    (if (= 0 (real-part z))
+        0
+        (atan (imag-part z) (real-part z))
+        )
+    )
   (define (make-from-mag-ang r a)
     (cons (mul r (cosine a)) (mul r (sine a))))
   ;; interface to the rest of the system
@@ -52,7 +56,9 @@
   (define (imag-part z)
     (mul (magnitude z) (sine (angle z))))
   (define (make-from-real-imag x y)
-    (cons (sqrt (add (square x) (square y))) (atan y x)))
+    (cons (sqrt (add (square x) (square y))) (if (= x 0)
+                                                 0
+                                                 (atan y x))))
   ;; interface to the rest of the system
   (define (tag x)
     (attach-tag 'polar x))

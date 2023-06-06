@@ -15,6 +15,8 @@
   (put 'cosine '(real) (lambda (x) (tag (round (cos x)))))
   (put 'sine '(real) (lambda (x) (tag (round (sin x)))))
   (put 'equ? '(integer integer) =)
+  (put 'less? '(integer integer) <)
+  (put 'more? '(integer integer) >)
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'make
        'integer

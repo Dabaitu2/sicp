@@ -5,6 +5,12 @@
   (cons type-tag contents))
 ;; (if (number? contents) contents (cons type-tag contents)))
 
+(define (is-datum? datum)
+  (cond
+    [(pair? datum) #t]
+    [(number? datum) #t]
+    [else #f])
+  )
 (define (type-tag datum)
   (cond
     [(pair? datum) (car datum)]
@@ -17,4 +23,4 @@
     [(number? datum) datum]
     [else (error "Bad tagged datum -- CONTENTS" datum)]))
 
-(#%provide attach-tag type-tag contents)
+(#%provide attach-tag type-tag contents is-datum?)

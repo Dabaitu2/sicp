@@ -12,11 +12,13 @@
   (put 'div '(real real) /)
   (put 'negate '(real) (lambda (x) (tag (- x))))
   (put 'equ? '(real real) =)
+  (put 'less? '(real real) <)
+  (put 'more? '(real real) >)
   (put '=zero? '(real) (lambda (x) (= x 0)))
 
-  (put 'project
-       '(real)
-       (lambda (x) (attach-tag 'integer (round x))))
+  #| (put 'project |#
+  #|      '(real) |#
+  #|      (lambda (x) (attach-tag 'rational (cons (round x) 1)))) |#
 
   (put 'cosine '(real) (lambda (x) (tag (cos x))))
   (put 'sine '(real) (lambda (x) (tag (sin x))))

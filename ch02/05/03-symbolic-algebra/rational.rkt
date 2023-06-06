@@ -38,6 +38,18 @@
       (= (* (/ (numer x) g1) (/ (denom y) g1))
          (* (/ (numer y) g2) (/ (denom x) g2)))))
 
+  (define (less? x y)
+    (let ([g1 (gcd (numer x) (denom x))]
+          [g2 (gcd (numer y) (denom y))])
+      (< (* (/ (numer x) g1) (/ (denom y) g1))
+         (* (/ (numer y) g2) (/ (denom x) g2)))))
+
+  (define (more? x y)
+    (let ([g1 (gcd (numer x) (denom x))]
+          [g2 (gcd (numer y) (denom y))])
+      (> (* (/ (numer x) g1) (/ (denom y) g1))
+         (* (/ (numer y) g2) (/ (denom x) g2)))))
+
   (define (=zero? x)
     (= (numer x) 0))
 
@@ -71,6 +83,8 @@
        (lambda (n) (attach-tag 'real (sin (/ (numer n) (denom n))))))
 
   (put 'equ? '(rational rational) equ?)
+  (put 'less? '(rational rational) less?)
+  (put 'more? '(rational rational) more?)
   ;; apply-generic 只能处理 list, 所以给他包一下
   (put '=zero? '(rational) =zero?)
   (put 'raise
