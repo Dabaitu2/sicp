@@ -12,7 +12,9 @@
   (define (denom x)
     (cdr x))
   (define (make-rat n d)
-    (let ([g (gcd n d)]) (cons (/ n g) (/ d g))))
+    (if (and (integer? n) (integer? d))
+        (let ([g (gcd n d)]) (cons (/ n g) (/ d g)))
+        (cons n d)))
 
   (define (add-rat x y)
     (make-rat (+ (* (numer x) (denom y))
@@ -69,18 +71,19 @@
        (lambda (x y) (tag (div-rat x y))))
   (put 'negate
        '(rational)
-       (lambda (x) (make-rat (- (numer x))
-                             (- (denom x)))))
+       (lambda (x) (make-rat (- (numer x)) (- (denom x)))))
 
   ;; it's hard to project a real number (calculated by original cos) into rational
   ;; I do believe there's a approximate way, but it's beyond what we should focus in this chapter
   ;; So I will just put result into real domain
   (put 'cosine
        '(rational)
-       (lambda (n) (attach-tag 'real  (cos (/ (numer n) (denom n))))))
+       (lambda (n)
+         (attach-tag 'real (cos (/ (numer n) (denom n))))))
   (put 'cosine
        '(rational)
-       (lambda (n) (attach-tag 'real (sin (/ (numer n) (denom n))))))
+       (lambda (n)
+         (attach-tag 'real (sin (/ (numer n) (denom n))))))
 
   (put 'equ? '(rational rational) equ?)
   (put 'less? '(rational rational) less?)

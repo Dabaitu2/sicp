@@ -1,4 +1,6 @@
 #lang racket
+(#%require
+ "../../../common/data/conventional-interface.rkt")
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 (#%require "./generic-tools.rkt")
@@ -239,7 +241,7 @@
   (define (tag termlist)
     (attach-tag 'sparse termlist))
 
-  ;; helpers
+  ;; melpers
   (define (coeff term)
     (apply-generic 'coeff term))
   (define (order term)
@@ -675,6 +677,8 @@
   ((get '(polynomial)) poly))
 (define (adjoin-term term termlist)
   (apply-generic 'adjoin-term term termlist))
+(define (make-termlist-of-type type termlist)
+  (accumulate adjoin-term (make-empty-termlist-of-type type) termlist))
 
 (define (make-canonical target-var poly)
   (attach-tag 'polynomial
@@ -689,4 +693,5 @@
            the-empty-termlist
            install-polynomial-package
            make-empty-termlist-of-type
-           make-canonical)
+           make-canonical
+           make-termlist-of-type)

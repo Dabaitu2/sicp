@@ -71,3 +71,10 @@
 
 ;; Support calculation between different variables polynomial: quiz 2.92
 (mul ypoly xpoly)
+
+;; quiz 2.93
+(define p1 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 2 1) (make-term 0 1)))))
+(define p2 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 3 1) (make-term 0 1)))))
+
+(define rf (make-rational p2 p1))
+(display rf)

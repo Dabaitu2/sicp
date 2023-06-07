@@ -8,7 +8,7 @@
 ;; 2. 转为相同后，可能存在 coeff 同时包含 poly 和 datam 的状况，因此要支持这两者之间进行运算。可以通过将 datum raise 到具有特殊 variable 的 poly 来实现
 ;;    这样, 只要 poly 相关的内部运算一旦遇到这个 特殊 varaible 就会知道如何处理
 ;; 3. 遇到不同 variable  的 poly 时, 我们需要确定将哪个 poly 转成 canonical form, 因此需要对变量进行一个预先排序 (priority-order)
-;;   
+;;
 ;;
 ;; ((3X^2 + 4X)z^2 + z)y^2 => variable y, term (make-term 2 (make-poly 'x (term-list (2 3) (1 4))))
 ;;
@@ -36,42 +36,51 @@
 
 ;; this function will be put inside `install-polynomial-package`
 (define (make-canonical target-var poly)
-  (let ([terms (term-list poly)] [cur-var (variable poly)])
-    (let ([terms-type (type-tag terms)])
-      (if (empty-termlist? terms)
-          (make-poly target-var
-                     (make-empty-termlist-of-type
-                      terms-type))
-          (let ([term (first-term terms)])
-            (add-poly
-             (make-canonical
-              target-var
-              (make-poly cur-var (rest-terms terms)))
-             (let ([cof (coeff term)] [ord (order term)])
-               (let ([cof-type (type-tag cof)])
-                 (if (eq? cof-type 'polynomial)
-                     (let ([cof-poly (contents cof)])
-                       (let ([cof-poly-var
-                              (variable cof-poly)])
-                         (mul-poly
-                          (if (eq? cof-poly-var target-var)
-                              term
-                              (make-canonical target-var
-                                              cof-poly))
-                          (make-poly-from-single-term
-                           target-var
-                           cur-var
-                           ord
-                           1
-                           terms-type))))
-                     ;; if coeff is not polynomial, which means this term has no relationship
-                     ;; with target-var at all, we can just use whole terms as the coeff of the new poly with 0 order
-                     (make-poly-from-single-term
-                      target-var
-                      cur-var
-                      ord
-                      cof
-                      terms-type))))))))))
+  (let ([terms (term-list poly)]
+        [cur-var (variable poly)])
+    (if (eq? cur-var target-var)
+        poly
+        (let ([terms-type (type-tag terms)])
+          (if (empty-termlist? terms)
+              (make-poly target-var
+                         (make-empty-termlist-of-type
+                          terms-type))
+              (let ([term (first-term terms)])
+                (add-poly
+                 (make-canonical
+                  target-var
+                  (make-poly cur-var
+                             (attach-tag
+                              terms-type
+                              (rest-terms terms))))
+                 (let ([cof (coeff term)]
+                       [ord (order term)])
+                   (let ([cof-type (type-tag cof)])
+                     (if (eq? cof-type 'polynomial)
+                         (let ([cof-poly (contents cof)])
+                           (let ([cof-poly-var
+                                  (variable cof-poly)])
+                             (mul-poly
+                              (if (eq? cof-poly-var
+                                       target-var)
+                                  cof-poly
+                                  (make-canonical
+                                   target-var
+                                   cof-poly))
+                              (make-poly-from-single-term
+                               target-var
+                               cur-var
+                               ord
+                               1
+                               terms-type))))
+                         ;; if coeff is not polynomial, which means this term has no relationship
+                         ;; with target-var at all, we can just use whole terms as the coeff of the new poly with 0 order
+                         (make-poly-from-single-term
+                          target-var
+                          cur-var
+                          ord
+                          cof
+                          terms-type)))))))))))
 
 (define (make-poly-from-single-term target-var
                                     cur-var
@@ -88,7 +97,8 @@
                            (adjoin-term
                             (make-term ord cof)
                             (make-empty-termlist-of-type
-                             terms-type))))))))
+                             terms-type)))))
+    (make-empty-termlist-of-type terms-type))))
 
 ;; after making polynomial with lower priority variable into canonical form
 ;; we can use original methods to handle the computation between them
@@ -99,3 +109,21 @@
                   (symbol->string var2))
         (cons p1 p2)
         (cons p2 p1))))
+
+
+;; besides that, we need to keep all the type layer work
+(put 'raise
+     '(real)
+     (lambda (x)
+       (tag (make-from-real-imag (contents x) 0))))
+(put 'raise '(complex) (lambda (x) (tag (make-term 0 x))))
+(put 'raise
+     '(term)
+     (lambda (x)
+       (tag (adjoin-term x (the-empty-termlist)))))
+(put 'raise
+     '(sparse)
+     (lambda (sparselist)
+       (tag (make-dense-from-sparse
+             (contents sparselist)))))
+(put 'raise '(dense) (lambda (x) (tag (make-poly '$ x))))
