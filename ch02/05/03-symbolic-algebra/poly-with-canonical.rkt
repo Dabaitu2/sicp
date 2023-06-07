@@ -502,8 +502,12 @@
            (make-poly (variable p1)
                       (add-terms (term-list p1)
                                  (term-list p2)))
-           (error "Polys not in same var -- ADD-POLY"
-                  (list p1 p2)))]))
+           (let ([priority-order (order-by-priority p1 p2)])
+             (let ([target-var
+                    (variable (car priority-order))])
+               (add-poly (make-canonical target-var p1)
+                         (make-canonical target-var
+                                         p2)))))]))
 
   (define (mul-poly p1 p2)
     (cond
@@ -520,8 +524,12 @@
            (make-poly (variable p1)
                       (mul-terms (term-list p1)
                                  (term-list p2)))
-           (error "Polys not in same var -- MUL-POLY"
-                  (list p1 p2)))]))
+           (let ([priority-order (order-by-priority p1 p2)])
+             (let ([target-var
+                    (variable (car priority-order))])
+               (mul-poly (make-canonical target-var p1)
+                         (make-canonical target-var
+                                         p2)))))]))
 
   (define (zero-poly? poly)
     (define (zero-terms? termlist)
@@ -541,8 +549,11 @@
           (list
            (tag (make-poly (variable p1) (cadr results)))
            (tag (make-poly (variable p1) (caddr results)))))
-        (error "Polys not in same var -- MUL-POLY"
-               (list p1 p2))))
+        (let ([priority-order (order-by-priority p1 p2)])
+          (let ([target-var
+                 (variable (car priority-order))])
+            (div-poly (make-canonical target-var p1)
+                      (make-canonical target-var p2))))))
 
   (define (_equ? x y)
     (and (eq? (variable x) (variable y))
@@ -591,44 +602,49 @@
   (define (make-canonical target-var poly)
     (let ([terms (term-list poly)]
           [cur-var (variable poly)])
-      (let ([terms-type (type-tag terms)])
-        (if (empty-termlist? terms)
-            (make-poly target-var
-                       (make-empty-termlist-of-type
-                        terms-type))
-            (let ([term (first-term terms)])
-              (add-poly
-               (make-canonical
-                target-var
-                (make-poly cur-var
-                           (attach-tag terms-type
-                                       (rest-terms terms))))
-               (let ([cof (coeff term)] [ord (order term)])
-                 (let ([cof-type (type-tag cof)])
-                   (if (eq? cof-type 'polynomial)
-                       (let ([cof-poly (contents cof)])
-                         (let ([cof-poly-var
-                                (variable cof-poly)])
-                           (mul-poly
-                            (if (eq? cof-poly-var
-                                     target-var)
-                                cof-poly
-                                (make-canonical target-var
-                                                cof-poly))
-                            (make-poly-from-single-term
-                             target-var
-                             cur-var
-                             ord
-                             1
-                             terms-type))))
-                       ;; if coeff is not polynomial, which means this term has no relationship
-                       ;; with target-var at all, we can just use whole terms as the coeff of the new poly with 0 order
-                       (make-poly-from-single-term
-                        target-var
-                        cur-var
-                        ord
-                        cof
-                        terms-type))))))))))
+      (if (eq? cur-var target-var)
+          poly
+          (let ([terms-type (type-tag terms)])
+            (if (empty-termlist? terms)
+                (make-poly target-var
+                           (make-empty-termlist-of-type
+                            terms-type))
+                (let ([term (first-term terms)])
+                  (add-poly
+                   (make-canonical
+                    target-var
+                    (make-poly cur-var
+                               (attach-tag
+                                terms-type
+                                (rest-terms terms))))
+                   (let ([cof (coeff term)]
+                         [ord (order term)])
+                     (let ([cof-type (type-tag cof)])
+                       (if (eq? cof-type 'polynomial)
+                           (let ([cof-poly (contents cof)])
+                             (let ([cof-poly-var
+                                    (variable cof-poly)])
+                               (mul-poly
+                                (if (eq? cof-poly-var
+                                         target-var)
+                                    cof-poly
+                                    (make-canonical
+                                     target-var
+                                     cof-poly))
+                                (make-poly-from-single-term
+                                 target-var
+                                 cur-var
+                                 ord
+                                 1
+                                 terms-type))))
+                           ;; if coeff is not polynomial, which means this term has no relationship
+                           ;; with target-var at all, we can just use whole terms as the coeff of the new poly with 0 order
+                           (make-poly-from-single-term
+                            target-var
+                            cur-var
+                            ord
+                            cof
+                            terms-type)))))))))))
 
   (define (make-poly-from-single-term target-var
                                       cur-var
