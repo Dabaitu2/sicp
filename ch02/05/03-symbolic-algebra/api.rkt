@@ -20,6 +20,7 @@
 (define (raise x) (apply-generic 'raise x))
 (define (sine x) (apply-generic 'sine x))
 (define (cosine x) (apply-generic 'cosine x))
+(define (greatest-common-divisor x y) (apply-generic 'greatest-common-divisor x y))
 
 
-(#%provide sub add mul div equ? less? more? =zero? raise sine cosine negate)
+(#%provide sub add mul div equ? less? more? =zero? raise sine cosine negate greatest-common-divisor)

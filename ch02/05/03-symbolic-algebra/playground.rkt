@@ -78,3 +78,11 @@
 
 (define rf (make-rational p2 p1))
 (display rf)
+(newline)
+
+
+;; quiz 2.94
+(define p3 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 4 1) (make-term 3 -1) (make-term 2 -2) (make-term 1 2)))))
+(define p4 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 3 1) (make-term 1 -1)))))
+(greatest-common-divisor p3 p4)
+

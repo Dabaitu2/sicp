@@ -3,6 +3,11 @@
 (#%require "./env.rkt")
 (#%require "./coercion.rkt")
 
+(define (gcd a b)
+  (if (= b 0)
+      a
+      (gcd b (remainder a b))))
+
 (define (install-real-package)
   (define (tag x)
     (attach-tag 'real x))
@@ -31,6 +36,7 @@
                  (apply (get 'denom '(rational))
                         (list (contents x)))))))
 
+  (put 'greatest-common-divisor '(real real) gcd)
   (put 'make
        'real
        (lambda (x)

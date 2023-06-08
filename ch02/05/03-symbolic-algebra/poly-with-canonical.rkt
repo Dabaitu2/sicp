@@ -122,13 +122,17 @@
   (define (sub-terms L1 L2)
     (let ([terms (add-terms L1 (negate-terms L2))])
       (define (simplify-iter source)
-        (if (=zero? (coeff (first-term source)))
-            (simplify-iter (rest-terms source))
-            source))
+        (if (empty-termlist? source)
+            source
+            (if (=zero? (coeff (first-term source)))
+                (simplify-iter (rest-terms source))
+                source)
+            )
+        )
       (simplify-iter terms)))
 
   (define (div-terms L1 L2)
-    (if (empty-termlist? L1)
+    (if (or (empty-termlist? L1) (empty-termlist? L2))
         (list (the-empty-termlist) (the-empty-termlist))
         (let ([t1 (first-term L1)] [t2 (first-term L2)])
           (if (> (order t2) (order t1))
@@ -194,7 +198,9 @@
        (lambda (T1 T2) (tag (sub-terms T1 T2))))
   (put 'div-terms
        '(dense dense)
-       (lambda (T1 T2) (tag (div-terms T1 T2))))
+       (lambda (T1 T2)
+         (let ([terms (div-terms T1 T2)])
+           (list (tag (car terms)) (tag (cadr terms))))))
 
   (put 'first-term 'dense first-term)
   (put 'rest-terms 'dense rest-terms)
@@ -314,7 +320,7 @@
 
   (define (negate-terms termlist)
     (if (empty-termlist? termlist)
-        the-empty-termlist
+        (the-empty-termlist)
         (let ([t (first-term termlist)])
           (adjoin-term
            (make-term (order t) (negate (coeff t)))
@@ -323,13 +329,15 @@
   (define (sub-terms L1 L2)
     (let ([terms (add-terms L1 (negate-terms L2))])
       (define (simplify-iter source)
-        (if (=zero? (coeff (first-term source)))
-            (simplify-iter (rest-terms source))
-            source))
+        (if (empty-termlist? source)
+            source
+            (if (=zero? (coeff (first-term source)))
+                (simplify-iter (rest-terms source))
+                source)))
       (simplify-iter terms)))
 
   (define (div-terms L1 L2)
-    (if (empty-termlist? L1)
+    (if (or (empty-termlist? L1) (empty-termlist? L2))
         (list (the-empty-termlist) (the-empty-termlist))
         (let ([t1 (first-term L1)] [t2 (first-term L2)])
           (if (> (order t2) (order t1))
@@ -406,7 +414,9 @@
        (lambda (T1 T2) (tag (sub-terms T1 T2))))
   (put 'div-terms
        '(sparse sparse)
-       (lambda (T1 T2) (tag (div-terms T1 T2))))
+       (lambda (T1 T2)
+         (let ([terms (div-terms T1 T2)])
+           (list (tag (car terms)) (tag (cadr terms))))))
 
   (put 'first-term 'sparse first-term)
   (put 'rest-terms 'sparse rest-terms)
@@ -484,6 +494,25 @@
     (apply-generic 'coeff term))
   (define (order term)
     (apply-generic 'order term))
+
+  (define (gcd-terms a b)
+    (if (empty-termlist? b)
+        a
+        (gcd-terms b (remainder-terms a b))))
+
+  (define (remainder-terms a b)
+    (cadr (div-terms a b)))
+
+  (define (gcd-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+        (make-poly (variable p1)
+                   (gcd-terms (term-list p1)
+                              (term-list p2)))
+        (let ([priority-order (order-by-priority p1 p2)])
+          (let ([target-var
+                 (variable (car priority-order))])
+            (gcd-poly (make-canonical target-var p1)
+                      (make-canonical target-var p2))))))
 
   ;; 多项式相加的本质就是每一个对应 term 相加 的组合
   ;; 对应的 term 应该具有对应的 乘方数
@@ -593,6 +622,9 @@
   (put 'equ? '(polynomial polynomial) _equ?)
   (put 'term-list '(polynomial) term-list)
   (put 'raise '(dense) (lambda (x) (tag (make-poly '$ x))))
+  (put 'greatest-common-divisor
+       '(polynomial polynomial)
+       (lambda (x y) (tag (gcd-poly x y))))
 
   (define (order-by-priority p1 p2)
     (let ([var1 (variable p1)] [var2 (variable p2)])
@@ -678,7 +710,9 @@
 (define (adjoin-term term termlist)
   (apply-generic 'adjoin-term term termlist))
 (define (make-termlist-of-type type termlist)
-  (accumulate adjoin-term (make-empty-termlist-of-type type) termlist))
+  (accumulate adjoin-term
+              (make-empty-termlist-of-type type)
+              termlist))
 
 (define (make-canonical target-var poly)
   (attach-tag 'polynomial
