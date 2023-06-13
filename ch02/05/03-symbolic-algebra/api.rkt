@@ -21,6 +21,10 @@
 (define (sine x) (apply-generic 'sine x))
 (define (cosine x) (apply-generic 'cosine x))
 (define (greatest-common-divisor x y) (apply-generic 'greatest-common-divisor x y))
+(define (greatest-common-divisor-legacy x y) (apply-generic 'greatest-common-divisor-legacy x y))
+(define (pseudoremainder-terms t1 t2) (apply-generic 'pseudoremainder-terms t1 t2))
+(define (remainder-terms t1 t2) (apply-generic 'remainder-terms t1 t2))
+(define (div-terms t1 t2) (apply-generic 'div-terms t1 t2))
 
 
-(#%provide sub add mul div equ? less? more? =zero? raise sine cosine negate greatest-common-divisor)
+(#%provide sub add mul div equ? less? more? =zero? raise sine cosine negate greatest-common-divisor pseudoremainder-terms remainder-terms div-terms greatest-common-divisor-legacy)

@@ -3,7 +3,7 @@
 ;; 如果要使用一些原生的东西，就用 rackt lang 吧，不然 sicp 的 list / cons 和 racket 的不兼
 ;; 因为 sicp 的是我们自己实现的语法特性 (提前赞叹一下)
 (#%require racket/gui/base)
-(#%require "../../../common/conventional-interface.rkt")
+(#%require "../../../common/data/conventional-interface.rkt")
 (#%require "./frame.rkt")
 (#%require "./segment.rkt")
 (#%require "./vector.rkt")

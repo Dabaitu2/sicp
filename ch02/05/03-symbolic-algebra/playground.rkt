@@ -72,7 +72,11 @@
 ;; Support calculation between different variables polynomial: quiz 2.92
 (mul ypoly xpoly)
 
+;; 我们可以进一步把多项式扩充为 "有理函数"  (Rational function)
+;; 也就是分子和分母均为多项式的分式, 这样的有理函数也是可以做加减乘除的, 并且在最后还可以实现加减乘除后可以被化为最简形式
+;;
 ;; quiz 2.93
+;; 先简单构造出有理函数
 (define p1 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 2 1) (make-term 0 1)))))
 (define p2 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 3 1) (make-term 0 1)))))
 
@@ -82,7 +86,30 @@
 
 
 ;; quiz 2.94
+;; 这一步是为了做化简的前置步骤，求出多项式的最大公因式, 以便未来化简
 (define p3 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 4 1) (make-term 3 -1) (make-term 2 -2) (make-term 1 2)))))
 (define p4 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 3 1) (make-term 1 -1)))))
 (greatest-common-divisor p3 p4)
+
+
+;; quiz 2.95
+;; 本题揭示了 2.94 中存在的一个问题，涉及到多项式计算的结果可能出现非整数的情况，我们的解法还不够完善
+(define p5 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 2 1) (make-term 1 -2) (make-term 0 1)))))
+(define p6 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 2 11) (make-term 0 7)))))
+(define p7 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 1 13) (make-term 0 5)))))
+
+(define q1 (mul p5 p6))
+(define q2 (mul p5 p7))
+
+;; 我们理想中对 q1 q2 求出 gcd 的数据结果应该是 p5, 因为很明显它是 divisor
+;; 但这里 (2.96 之前) 却失败了, 因为存在
+(display p5)
+(display " and ")
+(display (greatest-common-divisor-legacy q1 q2))
+
+;; 利用伪除, 我们可以规避浮点数精度计算的问题, 再将被放大的系数除去，即可获得正确的最大公因式
+(remainder-terms (term-list q1) (term-list q2))
+(pseudoremainder-terms (term-list q1) (term-list q2))
+(greatest-common-divisor q1 q2)
+
 
