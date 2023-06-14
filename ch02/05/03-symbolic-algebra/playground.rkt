@@ -81,8 +81,9 @@
 (define p2 (make-polynomial 'x (make-termlist-of-type 'dense (list (make-term 3 1) (make-term 0 1)))))
 
 (define rf (make-rational p2 p1))
-(display rf)
-(newline)
+;; 这里的 rf + rf 没有化简, 结果就非常复杂
+;; (x^3 + 2 / x^2 + 1) + (x^3 + 2 / x^2 + 1) = 2 * (x^3+2) * (x^2+1) / (x^2+1) * (x^2+1)
+(add rf rf)
 
 
 ;; quiz 2.94
@@ -102,7 +103,7 @@
 (define q2 (mul p5 p7))
 
 ;; 我们理想中对 q1 q2 求出 gcd 的数据结果应该是 p5, 因为很明显它是 divisor
-;; 但这里 (2.96 之前) 却失败了, 因为存在
+;; 但这里 (2.96 之前) 却失败了, 因为存在浮点数计算的精度损失
 (display p5)
 (display " and ")
 (display (greatest-common-divisor-legacy q1 q2))
@@ -111,5 +112,16 @@
 (remainder-terms (term-list q1) (term-list q2))
 (pseudoremainder-terms (term-list q1) (term-list q2))
 (greatest-common-divisor q1 q2)
+
+
+;; 2.97 基本的算法如下，接下来做个化简就可以了
+(define to-simplify (add rf rf))
+(define gcdww (greatest-common-divisor ((get 'numer '(rational)) (contents to-simplify))
+                                       ((get 'denom '(rational)) (contents to-simplify))))
+(define hello ((get 'numer '(rational)) (contents to-simplify)))
+(define world ((get 'denom '(rational)) (contents to-simplify)))
+
+(newline)
+(make-rational (car (div hello gcdww)) (car (div world gcdww)))
 
 

@@ -1,6 +1,7 @@
 #lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
+(#%require "./api.rkt")
 (#%require "./coercion.rkt")
 
 (define (install-rational-package)
@@ -17,23 +18,24 @@
         (cons n d)))
 
   (define (add-rat x y)
-    (make-rat (+ (* (numer x) (denom y))
-                 (* (numer y) (denom x)))
-              (* (denom x) (denom y))))
+    (make-rat (add (mul (numer x) (denom y))
+                 (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
 
   (define (sub-rat x y)
-    (make-rat (- (* (numer x) (denom y))
-                 (* (numer y) (denom x)))
-              (* (denom x) (denom y))))
+    (make-rat (sub (mul (numer x) (denom y))
+                 (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
 
   (define (mul-rat x y)
-    (make-rat (* (numer x) (numer y))
-              (* (denom x) (denom y))))
+    (make-rat (mul (numer x) (numer y))
+              (mul (denom x) (denom y))))
 
   (define (div-rat x y)
-    (make-rat (* (numer x) (denom y))
-              (* (numer y) (denom x))))
+    (make-rat (mul (numer x) (denom y))
+              (mul (numer y) (denom x))))
 
+  ;; a flaw: it only support numeric comparsion 
   (define (equ? x y)
     (let ([g1 (gcd (numer x) (denom x))]
           [g2 (gcd (numer y) (denom y))])
@@ -95,11 +97,14 @@
        (lambda (x) (make-rational (contents x) 1)))
 
   ;; project 会被 apply-generic 使用，所以会被自动解 tag，这里的 x 一定是 content 数据
-  (put 'project
-       '(rational)
-       (lambda (x)
-         (attach-tag 'integer
-                     (round (/ (numer x) (denom x))))))
+  ;; 这里的 drop 实现想要完全做到会很麻烦, 因为 rational 不一定 denom 和 numer 是 numeric 的
+  ;; 更合理的思路应该是让 rational-function 和 rational 分开，而不应该让有理数中包含代数式
+  ;; 但这个复杂度就远远超出我们应该做的部分了
+  #| (put 'project |#
+  #|      '(rational) |#
+  #|      (lambda (x) |#
+  #|        (attach-tag 'integer |#
+  #|                    (round (/ (numer x) (denom x)))))) |#
 
   ;; 而 make 并不会被 apply-generic 使用, 所以倒是不用包装
   (put 'make 'rational (lambda (n d) (tag (make-rat n d))))

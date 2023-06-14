@@ -691,8 +691,8 @@
         (let ([results (div-terms (term-list p1)
                                   (term-list p2))])
           (list
-           (tag (make-poly (variable p1) (cadr results)))
-           (tag (make-poly (variable p1) (caddr results)))))
+           (tag (make-poly (variable p1) (car results)))
+           (tag (make-poly (variable p1) (cadr results)))))
         (let ([priority-order (order-by-priority p1 p2)])
           (let ([target-var
                  (variable (car priority-order))])
