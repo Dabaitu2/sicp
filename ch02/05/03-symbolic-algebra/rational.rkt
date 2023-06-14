@@ -11,20 +11,21 @@
   (define (numer x)
     (car x))
   (define (denom x)
-    (cdr x))
+    (cadr x))
   (define (make-rat n d)
-    (if (and (integer? n) (integer? d))
-        (let ([g (gcd n d)]) (cons (/ n g) (/ d g)))
-        (cons n d)))
+    (reduce n d))
+  #| (if (and (integer? n) (integer? d)) |#
+  #|     (let ([g (gcd n d)]) (cons (/ n g) (/ d g))) |#
+  #|     (cons n d))) |#
 
   (define (add-rat x y)
     (make-rat (add (mul (numer x) (denom y))
-                 (mul (numer y) (denom x)))
+                   (mul (numer y) (denom x)))
               (mul (denom x) (denom y))))
 
   (define (sub-rat x y)
     (make-rat (sub (mul (numer x) (denom y))
-                 (mul (numer y) (denom x)))
+                   (mul (numer y) (denom x)))
               (mul (denom x) (denom y))))
 
   (define (mul-rat x y)
@@ -35,8 +36,8 @@
     (make-rat (mul (numer x) (denom y))
               (mul (numer y) (denom x))))
 
-  ;; a flaw: it only support numeric comparsion 
-  (define (equ? x y)
+  ;; a flaw: it only support numeric comparsion
+  (define (_equ? x y)
     (let ([g1 (gcd (numer x) (denom x))]
           [g2 (gcd (numer y) (denom y))])
       (= (* (/ (numer x) g1) (/ (denom y) g1))
@@ -55,7 +56,7 @@
          (* (/ (numer y) g2) (/ (denom x) g2)))))
 
   (define (=zero? x)
-    (= (numer x) 0))
+    (equ? (numer x) 0))
 
   (put 'numer '(rational) numer)
   (put 'denom '(rational) denom)
@@ -87,7 +88,7 @@
        (lambda (n)
          (attach-tag 'real (sin (/ (numer n) (denom n))))))
 
-  (put 'equ? '(rational rational) equ?)
+  (put 'equ? '(rational rational) _equ?)
   (put 'less? '(rational rational) less?)
   (put 'more? '(rational rational) more?)
   ;; apply-generic 只能处理 list, 所以给他包一下

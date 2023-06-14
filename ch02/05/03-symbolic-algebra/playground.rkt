@@ -83,6 +83,8 @@
 (define rf (make-rational p2 p1))
 ;; 这里的 rf + rf 没有化简, 结果就非常复杂
 ;; (x^3 + 2 / x^2 + 1) + (x^3 + 2 / x^2 + 1) = 2 * (x^3+2) * (x^2+1) / (x^2+1) * (x^2+1)
+;; 而经过重写 make-rational 到 reduce 通过求 gcd poly 进行化简之后, 结果就会自动进行化简了! Magical!
+(display "after reduce: ")
 (add rf rf)
 
 
@@ -123,5 +125,9 @@
 
 (newline)
 (make-rational (car (div hello gcdww)) (car (div world gcdww)))
+
+(reduce-terms (term-list q1) (term-list q2))
+(reduce-poly q1 q2)
+(reduce q1 q2)
 
 

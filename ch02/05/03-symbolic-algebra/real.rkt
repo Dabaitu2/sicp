@@ -2,11 +2,10 @@
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 (#%require "./coercion.rkt")
+(#%require "./api.rkt")
 
 (define (gcd a b)
-  (if (= b 0)
-      a
-      (gcd b (remainder a b))))
+  (if (= b 0) a (gcd b (remainder a b))))
 
 (define (install-real-package)
   (define (tag x)
@@ -20,6 +19,8 @@
   (put 'less? '(real real) <)
   (put 'more? '(real real) >)
   (put '=zero? '(real) (lambda (x) (= x 0)))
+  (define (reduce-reals n d)
+    (let ([g (gcd n d)]) (list (/ n g) (/ d g))))
 
   #| (put 'project |#
   #|      '(real) |#
@@ -31,10 +32,13 @@
   (put 'raise
        '(rational)
        (lambda (x)
-         (tag (/ (apply (get 'numer '(rational))
-                        (list (contents x)))
-                 (apply (get 'denom '(rational))
-                        (list (contents x)))))))
+         (tag (div ((get 'numer '(rational)) (contents x))
+                   ((get 'denom '(rational)) (contents x))))))
+
+  (put 'reduce
+       '(real real)
+       (lambda (a b)
+         (map (lambda (x) (tag x)) (reduce-reals a b))))
 
   (put 'greatest-common-divisor '(real real) gcd)
   (put 'make

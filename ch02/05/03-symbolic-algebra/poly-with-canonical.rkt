@@ -163,9 +163,20 @@
            #f)]
       [else #f]))
 
+  (define (reduce-terms n d)
+    (let ([gcd-n-d (gcd-terms n d)])
+      (list (car (div-terms n gcd-n-d))
+            (car (div-terms d gcd-n-d)))))
+
+  (define (div-coeff-list-gcd termlist)
+    (let ([coeff-list (map coeff termlist)])
+      (let ([gcd-coeff
+             (fold-left gcd (car coeff-list) coeff-list)])
+        (contents (car (div (tag termlist) gcd-coeff))))))
+
   (define (gcd-terms a b)
     (if (empty-termlist? b)
-        a
+        (div-coeff-list-gcd a)
         (gcd-terms b (pseudoremainder-terms a b))))
 
   (define (gcd-terms-legacy a b)
@@ -180,7 +191,8 @@
     (let ([o1 (order (first-term a))]
           [o2 (order (first-term b))]
           [c (coeff (first-term b))])
-      (let ([factor (expt c (add 1 (sub o1 o2)))])
+      (let ([factor
+             (expt (contents c) (contents (add 1 (sub o1 o2))))])
         (cadr (div-terms (mul-term-by-all-terms
                           (make-term 0 factor)
                           a)
@@ -192,6 +204,12 @@
   (put 'remainder-terms
        '(dense dense)
        (lambda (T1 T2) (tag (remainder-terms T1 T2))))
+
+  (put 'reduce-terms
+       '(dense dense)
+       (lambda (T1 T2)
+         (let ([terms (reduce-terms T1 T2)])
+           (list (tag (car terms)) (tag (cadr terms))))))
   (put 'gcd-terms
        '(dense dense)
        (lambda (T1 T2) (tag (gcd-terms T1 T2))))
@@ -448,12 +466,16 @@
                          term
                          rest-term-list))]))]))))))
 
+  (define (reduce-terms n d)
+    (let ([gcd-n-d (gcd-terms n d)])
+      (list (car (div-terms n gcd-n-d))
+            (car (div-terms d gcd-n-d)))))
+
   (define (div-coeff-list-gcd termlist)
-    (let ((coeff-list (map coeff termlist)))
-      (let ((gcd-coeff (fold-left gcd (car coeff-list) coeff-list)))
-        (contents (car (div (tag termlist) gcd-coeff)))
-        ))
-    )
+    (let ([coeff-list (map coeff termlist)])
+      (let ([gcd-coeff
+             (fold-left gcd (car coeff-list) coeff-list)])
+        (contents (car (div (tag termlist) gcd-coeff))))))
 
   (define (gcd-terms a b)
     (if (empty-termlist? b)
@@ -472,7 +494,8 @@
     (let ([o1 (order (first-term a))]
           [o2 (order (first-term b))]
           [c (coeff (first-term b))])
-      (let ([factor (expt c (add 1 (sub o1 o2)))])
+      (let ([factor
+             (expt (contents c) (contents (add 1 (sub o1 o2))))])
         (cadr (div-terms (mul-term-by-all-terms
                           (make-term 0 factor)
                           a)
@@ -487,6 +510,11 @@
   (put 'gcd-terms
        '(sparse sparse)
        (lambda (T1 T2) (tag (gcd-terms T1 T2))))
+  (put 'reduce-terms
+       '(sparse sparse)
+       (lambda (T1 T2)
+         (let ([terms (reduce-terms T1 T2)])
+           (list (tag (car terms)) (tag (cadr terms))))))
   (put 'gcd-terms-legacy
        '(sparse sparse)
        (lambda (T1 T2) (tag (gcd-terms-legacy T1 T2))))
@@ -597,6 +625,8 @@
     (apply-generic 'first-term L))
   (define (rest-terms L)
     (apply-generic 'rest-terms L))
+  (define (reduce-terms t1 t2)
+    (apply-generic 'reduce-terms t1 t2))
   (define (gcd-terms t1 t2)
     (apply-generic 'gcd-terms t1 t2))
   (define (gcd-terms-legacy t1 t2)
@@ -625,8 +655,19 @@
         (let ([priority-order (order-by-priority p1 p2)])
           (let ([target-var
                  (variable (car priority-order))])
-            (gcd-poly-legacy (make-canonical target-var p1)
-                             (make-canonical target-var p2))))))
+            (gcd-poly-legacy
+             (make-canonical target-var p1)
+             (make-canonical target-var p2))))))
+
+  (define (reduce-poly p1 p2)
+    (if (same-variable? (variable p1) (variable p2))
+        (map (lambda (x) (make-poly (variable p1) x))
+             (reduce-terms (term-list p1) (term-list p2)))
+        (let ([priority-order (order-by-priority p1 p2)])
+          (let ([target-var
+                 (variable (car priority-order))])
+            (reduce-poly (make-canonical target-var p1)
+                         (make-canonical target-var p2))))))
   ;; 多项式相加的本质就是每一个对应 term 相加 的组合
   ;; 对应的 term 应该具有对应的 乘方数
   ;; new logic: 对于持有特殊未知数 variable 的 poly, 一定是 raise 上来的 datum,
@@ -736,6 +777,16 @@
   (put 'term-list '(polynomial) term-list)
   (put 'raise '(dense) (lambda (x) (tag (make-poly '$ x))))
 
+  (put 'reduce-poly
+       '(polynomial polynomial)
+       (lambda (p1 p2)
+         (map (lambda (x) (tag x)) (reduce-poly p1 p2))))
+
+  (put 'reduce
+       '(polynomial polynomial)
+       (lambda (p1 p2)
+         (map (lambda (x) (tag x)) (reduce-poly p1 p2))))
+
   (put 'greatest-common-divisor
        '(polynomial polynomial)
        (lambda (x y) (tag (gcd-poly x y))))
@@ -827,6 +878,10 @@
   (apply-generic 'term-list poly))
 (define (adjoin-term term termlist)
   (apply-generic 'adjoin-term term termlist))
+(define (reduce-terms n d)
+  (apply-generic 'reduce-terms n d))
+(define (reduce-poly p1 p2)
+  (apply-generic 'reduce-poly p1 p2))
 (define (make-termlist-of-type type termlist)
   (accumulate adjoin-term
               (make-empty-termlist-of-type type)
@@ -841,6 +896,8 @@
 (#%provide make-polynomial
            make-term
            adjoin-term
+           reduce-terms
+           reduce-poly
            term-list
            the-empty-termlist
            install-polynomial-package

@@ -1,10 +1,15 @@
 #lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
+(#%require "../../../common/math/num-theory.rkt")
 
 (define (install-integer-package)
   (define (tag x)
     (attach-tag 'integer x))
+
+  (define (reduce-integers n d)
+    (let ([g (gcd n d)]) (list (/ n g) (/ d g))))
+
   ;; 为了维持闭包性质，需要加 tag, 而 获取的 xy 因为已经被 apply-generic 处理了
   ;; 所以是不带 tag 的 content
   (put 'add '(integer integer) +)
@@ -17,6 +22,10 @@
   (put 'equ? '(integer integer) =)
   (put 'less? '(integer integer) <)
   (put 'more? '(integer integer) >)
+  (put 'reduce
+       '(integer integer)
+       (lambda (a b)
+         (map (lambda (x) (tag x)) (reduce-integers a b))))
   (put '=zero? '(integer) (lambda (x) (= x 0)))
   (put 'make
        'integer
