@@ -1,6 +1,7 @@
 #lang racket
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
+(#%require "./api.rkt")
 (#%require "./coercion.rkt")
 
 (define (install-rational-package)
@@ -10,36 +11,52 @@
   (define (numer x)
     (car x))
   (define (denom x)
-    (cdr x))
+    (cadr x))
   (define (make-rat n d)
-    (let ([g (gcd n d)]) (cons (/ n g) (/ d g))))
+    (reduce n d))
+  #| (if (and (integer? n) (integer? d)) |#
+  #|     (let ([g (gcd n d)]) (cons (/ n g) (/ d g))) |#
+  #|     (cons n d))) |#
 
   (define (add-rat x y)
-    (make-rat (+ (* (numer x) (denom y))
-                 (* (numer y) (denom x)))
-              (* (denom x) (denom y))))
+    (make-rat (add (mul (numer x) (denom y))
+                   (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
 
   (define (sub-rat x y)
-    (make-rat (- (* (numer x) (denom y))
-                 (* (numer y) (denom x)))
-              (* (denom x) (denom y))))
+    (make-rat (sub (mul (numer x) (denom y))
+                   (mul (numer y) (denom x)))
+              (mul (denom x) (denom y))))
 
   (define (mul-rat x y)
-    (make-rat (* (numer x) (numer y))
-              (* (denom x) (denom y))))
+    (make-rat (mul (numer x) (numer y))
+              (mul (denom x) (denom y))))
 
   (define (div-rat x y)
-    (make-rat (* (numer x) (denom y))
-              (* (numer y) (denom x))))
+    (make-rat (mul (numer x) (denom y))
+              (mul (numer y) (denom x))))
 
-  (define (equ? x y)
+  ;; a flaw: it only support numeric comparsion
+  (define (_equ? x y)
     (let ([g1 (gcd (numer x) (denom x))]
           [g2 (gcd (numer y) (denom y))])
       (= (* (/ (numer x) g1) (/ (denom y) g1))
          (* (/ (numer y) g2) (/ (denom x) g2)))))
 
+  (define (less? x y)
+    (let ([g1 (gcd (numer x) (denom x))]
+          [g2 (gcd (numer y) (denom y))])
+      (< (* (/ (numer x) g1) (/ (denom y) g1))
+         (* (/ (numer y) g2) (/ (denom x) g2)))))
+
+  (define (more? x y)
+    (let ([g1 (gcd (numer x) (denom x))]
+          [g2 (gcd (numer y) (denom y))])
+      (> (* (/ (numer x) g1) (/ (denom y) g1))
+         (* (/ (numer y) g2) (/ (denom x) g2)))))
+
   (define (=zero? x)
-    (= (numer x) 0))
+    (equ? (numer x) 0))
 
   (put 'numer '(rational) numer)
   (put 'denom '(rational) denom)
@@ -57,20 +74,23 @@
        (lambda (x y) (tag (div-rat x y))))
   (put 'negate
        '(rational)
-       (lambda (x) (make-rat (- (numer x))
-                             (- (denom x)))))
+       (lambda (x) (make-rat (- (numer x)) (- (denom x)))))
 
   ;; it's hard to project a real number (calculated by original cos) into rational
   ;; I do believe there's a approximate way, but it's beyond what we should focus in this chapter
   ;; So I will just put result into real domain
   (put 'cosine
        '(rational)
-       (lambda (n) (attach-tag 'real  (cos (/ (numer n) (denom n))))))
+       (lambda (n)
+         (attach-tag 'real (cos (/ (numer n) (denom n))))))
   (put 'cosine
        '(rational)
-       (lambda (n) (attach-tag 'real (sin (/ (numer n) (denom n))))))
+       (lambda (n)
+         (attach-tag 'real (sin (/ (numer n) (denom n))))))
 
-  (put 'equ? '(rational rational) equ?)
+  (put 'equ? '(rational rational) _equ?)
+  (put 'less? '(rational rational) less?)
+  (put 'more? '(rational rational) more?)
   ;; apply-generic 只能处理 list, 所以给他包一下
   (put '=zero? '(rational) =zero?)
   (put 'raise
@@ -78,11 +98,14 @@
        (lambda (x) (make-rational (contents x) 1)))
 
   ;; project 会被 apply-generic 使用，所以会被自动解 tag，这里的 x 一定是 content 数据
-  (put 'project
-       '(rational)
-       (lambda (x)
-         (attach-tag 'integer
-                     (round (/ (numer x) (denom x))))))
+  ;; 这里的 drop 实现想要完全做到会很麻烦, 因为 rational 不一定 denom 和 numer 是 numeric 的
+  ;; 更合理的思路应该是让 rational-function 和 rational 分开，而不应该让有理数中包含代数式
+  ;; 但这个复杂度就远远超出我们应该做的部分了
+  #| (put 'project |#
+  #|      '(rational) |#
+  #|      (lambda (x) |#
+  #|        (attach-tag 'integer |#
+  #|                    (round (/ (numer x) (denom x)))))) |#
 
   ;; 而 make 并不会被 apply-generic 使用, 所以倒是不用包装
   (put 'make 'rational (lambda (n d) (tag (make-rat n d))))

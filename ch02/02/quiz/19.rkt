@@ -23,7 +23,6 @@
                         (first-denomination coin-values))
                      coin-values)))))
 
-(cc 100 us-coins) ;; 292
-
-
-
+(cc 100 us-coins) ;; 292 ways to count the change
+(cc 10 us-coins) ;; 4 ways to count the change: 1*10, 5*2 10*1 1*5 + 5*1
+(cc 15 us-coins) ;; 6 ways to count the change
