@@ -177,7 +177,7 @@
 
 内部表达式又是一个 lambda 表达式。再次生成一个过程对象如下：
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626183250037.png" alt="image-20230626183250037｜/" style="zoom:70%;" />
+<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626183250037.png" alt="image-20230626183250037" style="zoom:70%;" />
 
 此时的过程对象的外界环境指向的就是 E1。最后将这个过程对象绑定到 global Env 的 W1.
 
@@ -188,7 +188,7 @@
 3. 开始求值内部表达式， 通过环境链表我们可以依次找到 amount 和 balance，并应用到环境表达式中计算。
 4. 调用 `set!` 时，balance 的 binding 会被修改，修改后的 balance 的 binding 会是 50.
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626192917971.png" alt="image-20230626192917971｜" style="zoom:67%;" />
+<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626192917971.png" alt="image-20230626192917971" style="zoom:67%;" />
 
 而我们如果重新定义一个 `(define W2 (make-withdraw 100))` 会产生一个全新的环境，而环境中的 bindings 就不会相互冲突。因此能够实现对象局部状态的修改不会影响到下一个对象。
 
@@ -210,4 +210,4 @@
 
 ```
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626200416328.png" alt="image-20230626200416328～｜" style="zoom:67%;" />
+<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626200416328.png" alt="image-20230626200416328" style="zoom:67%;" />
