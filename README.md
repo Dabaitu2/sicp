@@ -1,6 +1,9 @@
 # Learning Sicp
 
+![sicp](./images/sicp.png)
+
 ## Aim
+
 This repo is the record of learning the concept, besides, cause most of the knowledge of this book is hidden underneath the quiz.
 I manage to 
 
@@ -14,5 +17,33 @@ It might be the difference with other similar project (just from those I referre
 I build a directory for each subsection of each section of seach Chapter. It includes all the codes, including codes to answer quiz. 
 But for quiz, I put all the quiz belongs to one `sections` together rather than seperating into different subsection directories just for simplicity.
 
+
+
 ## Progress
-I've finished the quiz up to 2.91.
+
+I've finished the quiz up to <del>2.91</del> 3.23.
+
+### [ch01](./ch01/readme.md)
+
+### [ch02](./ch02/readme.md)
+
+[ch02-01](./ch02/01/readme.md)
+
+[ch02-02](./ch02/02/readme.md)
+
+[ch02-03](./ch02/03/readme.md)
+
+[ch02-04](./ch02/04/readme.md)
+
+[ch02-05](./ch02/05/readme.md)
+
+### [ch03](./ch03/readme.md)
+
+## Licence
+
+### Code
+this project's codes are under [MIT License](./LICENSE.md)
+
+### Notes
+this project's documentation and notes are under [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/)
+

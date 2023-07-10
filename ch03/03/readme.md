@@ -1,4 +1,4 @@
-# 3.3  Modeling with Mutable Data
+# 3.3  Modeling with Mutable Data  模拟可变数据
 
 第二章处理复合数据(由多个部分组成的数据)的方式来自于使用类似 `cons` 的东西来黏合多个部分。
 
@@ -28,7 +28,62 @@
       new))
 ```
 
-####  Sharing and identity
+我们甚至可以自己实现 cons 的 `set-car` 和 `set-cdr`
 
+```scheme
+#lang racket
 
+;; 变化 和 赋值 本质上就是一件事，我们在变化一个什么东西的时候就是在赋值
+;; 也就是在保证其前后 "相同" 的基础上对这个对象做出了改变, 无论是多么复杂的变化，其根源一定是赋值导致的
+;; 比如下面的 set-car! 本质上就是赋值了这个过程中对应的 x 罢了
+(define (cons x y)
+  (define (set-x! v)
+    (set! x v))
+  (define (set-y! v)
+    (set! y v))
+  (define (dispatch m)
+    (cond
+      [(eq? m 'car) x]
+      [(eq? m 'cdr) y]
+      [(eq? m 'set-car!) set-x!]
+      [(eq? m 'set-cdr!) set-y!]
+      [else (error "Undefined operation -- CONS" m)]))
+  dispatch)
+
+(define (car z)
+  (z 'car))
+(define (cdr z)
+  (z 'cdr))
+(define (set-car! z new-value)
+  ((z 'set-car!) new-value)
+  z)
+(define (set-cdr! z new-value)
+  ((z 'set-cdr!) new-value)
+  z)
+
+(define hello (cons 2 3))
+(car hello)
+(cdr hello)
+
+(set-car! hello 'a)
+(car hello)
+(set-cdr! hello 'b)
+(cdr hello)
+```
+
+这里要注意的一点是，如果 cons 中存在相同的数据被“共享”， 那么这个时候就要很注意 “同一” 所带来的问题了。
+
+比如我们可能轻易的构造出环形链表，或者在统计链表大小时错误的计算了多次“相同” 的cons。
+
+ ## 3.3.2 Queue
+
+为了实现一个 FIFO 队列，我们通常需要额外维护一个简单 pair 去指向队尾和队首，方便实现入队和出队。这样在面对插入操作时我们可以直接追加到 rear 指向的 pair 之后。而出队时也可以直接修改 front-ptr 的指向即可。
+
+<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230710212814161.png" alt="image-20230710212814161" style="zoom:67%;" />
+
+## 3.3.3 Tables
+
+<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230710213108539.png" alt="image-20230710213108539" style="zoom:60%;" />
+
+上面两章都是比较实践性的内容，主要就是在展示利用赋值可以实现一些较为复杂的数据结构
 
