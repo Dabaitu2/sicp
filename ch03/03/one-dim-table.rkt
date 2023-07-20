@@ -4,7 +4,7 @@
 ;; assoc => associate?
 ;; check if the key was found inside the records
 ;; recursive
-(define ((assoc key records))
+(define (assoc key records)
   (cond
     [(null? records) false]
     ;; equal can compare multiple type of values: symbol | datum | list
@@ -27,3 +27,8 @@
 
 (define (make-table)
   (list '*table*))
+
+(define tb (make-table))
+(insert! 'a 1 tb)
+(insert! 'b 2 tb)
+(lookup 'a tb)

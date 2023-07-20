@@ -52,6 +52,14 @@
 ;; (define W2) 和 1-6 完全一致,  但是创建的环境均是崭新的
 ;; 和原来的 make-withdraw 相比，使用 let 会多一层环境 + 一个环境对象，这是因为形式参数变成了一层额外的求值 lambda + 应用过程 
 
+
+;; p.s: 到这里，lisp 大道至简的感觉有点出来了
+;; 我们迄今为止写过的所有程序, 本质上都只是在操纵
+;; 1. lambda 表达式 用于构造过程, lambda 将 lambda表达式自身看作一等公民 , 因此 lambda 中的任何部分都可以替换成 lambda
+;; 2. define 将 value 确定到对应的环境中的 frame 的 binding
+;; 3. 没了! let 只是 lambda 的语法糖, 加减乘除, 内置函数等只是预先定义的方法, 甚至组成数据的基本元素 cons 都是过程! 那么基于 cons 产生的一切
+;; 也都只是组合和抽象的产物罢了
+
 (define W1 (make-withdraw 100)) 
 (W1 50)
 (define W2 (make-withdraw 100))

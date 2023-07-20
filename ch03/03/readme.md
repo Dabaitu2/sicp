@@ -126,3 +126,5 @@ We provide some helper to extract information out of the table.
 ```
 
 ![image-20230716223809045](/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230716223809045.png)
+
+two-dimensional table is still the abstract of sub one-dimensional tables
