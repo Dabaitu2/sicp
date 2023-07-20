@@ -28,11 +28,15 @@
   ((z 'set-cdr!) new-value)
   z)
 
-(define hello (cons 2 3))
-(car hello)
-(cdr hello)
+#| (define hello (cons 2 3)) |#
+#| (car hello) |#
+#| (cdr hello) |#
+#||#
+#| (set-car! hello 'a) |#
+#| (car hello) |#
+#| (set-cdr! hello 'b) |#
+#| (cdr hello) |#
+#||#
+#||#
 
-(set-car! hello 'a)
-(car hello)
-(set-cdr! hello 'b)
-(cdr hello)
+(#%provide cons car cdr set-car! set-cdr!)

@@ -87,3 +87,44 @@
 
 上面两章都是比较实践性的内容，主要就是在展示利用赋值可以实现一些较为复杂的数据结构
 
+one-dimensional Table looks like above. we accutually still using list(we call that `backbone`) to construct it. the only modification is we store the value by form of a pair rather than single value. That pair is a K-V structure. Meanwhile, to make the subsequent procedure to identify it, the `car` value of the first element of the `backbone` was a dummy value.
+
+> What is `dummy value`?
+>
+> The term "dummy value" is commonly used in programming and data analysis contexts. It refers to a placeholder or a temporary value that is used to represent missing or irrelevant data, or to serve a specific purpose in a particular situation.
+
+We provide some helper to extract information out of the table.
+
+```scheme
+;; one-dimensional table
+;; assoc => associate?
+;; check if the key was found inside the records
+;; recursive
+(define ((assoc key records))
+  (cond
+    [(null? records) false]
+    ;; equal can compare multiple type of values: symbol | datum | list
+    [(equal? key (caar records)) (car records)]
+    [else (assoc key (cdr records))]))
+
+;; find the value from table of specified key
+(define (lookup key table)
+  (let ([record (assoc key (cdr table))])
+    (if record (cdr record) false)))
+
+(define (insert! key value table)
+  (let ([record (assoc key (cdr table))])
+    (if record
+        (set-cdr! record value)
+        ;; 新插入的记录放到最前面
+        (set-cdr! table
+                  (cons (cons key value) (cdr table)))))
+  'ok)
+
+(define (make-table)
+  (list '*table*))
+```
+
+![image-20230716223809045](/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230716223809045.png)
+
+two-dimensional table is still the abstract of sub one-dimensional tables
