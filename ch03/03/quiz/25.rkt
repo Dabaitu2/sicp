@@ -24,9 +24,7 @@
   (define (record-value record)
     (cadr record))
   (define (record-subtable record)
-    (cddr record)
-    #| (let ([subtable (cddr record)]) |#
-    #|   (if (null? subtable) subtable (car subtable))) |#)
+    (cddr record))
   (define (set-record-value record value)
     (set-car! (cdr record) value))
   (define (set-record-subtable record subtable)
@@ -45,10 +43,7 @@
                 (cond
                   [(same-key? key (record-key check-record))
                    check-record]
-                  [else
-                   (assoc key (cdr records))])))
-          )
-      )
+                  [else (assoc key (cdr records))])))))
 
     (define (lookup . keys)
       (define (look-iter table keys)
@@ -72,37 +67,35 @@
               [remain-keys (cdr keys)]
               [subtable (record-subtable table)])
           (let ([record (assoc current-key subtable)])
-            (cond
-              [(and record)
-               ;; 1. has record, no remain keys: has attened to the end layer, update record
-               ;; this procedure might be the subpart of outlayer function
-               ;; we need to return the table for each possibilities
-               (if (null? remain-keys)
-                   (begin
-                     (set-record-value record value)
-                     table)
-                   ;; 2. has record, has remain keys: still got sub table: get inside
-                   (insert-iter! value record remain-keys))]
-              ;; 3. no record, no remain-keys, has attened to the end layer, create a new record and insert into the front of table
-              [else
-               (if (null? remain-keys)
-                   (begin
-                     (set-record-subtable
-                      table
-                      (cons
-                       (make-record current-key value '())
-                       subtable))
-                     table)
-                   ;; 4.no record, has remain-keys, insert remain-keys into a new generated table, it will be a recursive procedure too
-                   (begin
-                     (set-record-subtable
-                      table
-                      (cons (insert-iter!
-                             value
-                             (list current-key '() '())
-                             remain-keys)
-                            subtable))
-                     table))]))))
+            (if record
+                ;; 1. has record, no remain keys: has attened to the end layer, update record
+                ;; this procedure might be the subpart of outlayer function
+                ;; we need to return the table for each possibilities
+                (if (null? remain-keys)
+                    (begin
+                      (set-record-value record value)
+                      table)
+                    ;; 2. has record, has remain keys: still got sub table: get inside
+                    (insert-iter! value record remain-keys))
+                ;; 3. no record, no remain-keys, has attened to the end layer, create a new record and insert into the front of table
+                (if (null? remain-keys)
+                    (begin
+                      (set-record-subtable
+                       table
+                       (cons
+                        (make-record current-key value '())
+                        subtable))
+                      table)
+                    ;; 4.no record, has remain-keys, insert remain-keys into a new generated table, it will be a recursive procedure too
+                    (begin
+                      (set-record-subtable
+                       table
+                       (cons (insert-iter!
+                              value
+                              (list current-key '() '())
+                              remain-keys)
+                             subtable))
+                      table))))))
       (insert-iter! value local-table keys)
       local-table)
 
