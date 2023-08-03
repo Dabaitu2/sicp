@@ -6,7 +6,7 @@
 ;; 这里我们先提供对于数字类型的存储实现
 ;; 理论上，只要提供 gt, lt, eq 三类判断函数，我们可以支持各种类型的二叉树判断
 ;; 基础设计：
-;; record: ((key value) left right)
+;; record: ((key value subtable) left right)
 ;; 只需要将 3.25 中的 subtable 换成 subtree 即可
 ;; 和 key 同 size 的节点会在同一颗树, 而比 key size 多的节点会在 subtree 中进一步处理
 
@@ -159,7 +159,3 @@
 (get 'a 'b 'c)
 (get 'a 'b 'd)
 (get 'x)
-
-#| (((b ()  |#
-#|     ((c 1 ()) () ())) |#
-#|     () ()) () ()) |#

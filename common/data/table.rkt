@@ -155,4 +155,4 @@
 (define put (operational-table 'insert-proc!))
 
 
-(#%provide operational-table get put)
+(#%provide operational-table get put make-table)
