@@ -128,3 +128,41 @@ We provide some helper to extract information out of the table.
 ![image-20230716223809045](/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230716223809045.png)
 
 two-dimensional table is still the abstract of sub one-dimensional tables
+
+## 3.3.4 Circuit Simulator
+
+本章依然是一个实践性内容，通过 mutator 和赋值来实现电路模拟。
+
+我们结合之前所提到的诸多最佳实践来进行我们的模拟过程
+
+### Wishful Thinking + 组合过程
+
+首先是 wishful thinking： 我们认为我们需要什么基本构件来实现我们的电路系统，并且假设它们已经实现了。
+
+#### 基本构件和过程
+
+在这里，我们认为我们需要基本构件 `wire` , 基本过程 `（make-wire) ` `(get-signal wire)` , `（set-signal! wire signal)` 和 `(add-action wire action)`
+
+Wire 是一个持有 signal 的对象, 这里看起来有点反常识，我们总认为 wire 只是流过 signal，但是在模拟的过程中，它持有 signal 是最方便的。
+
+get-signal： 从 wire 中获取当前信号
+
+set-signal：改变 wire 中的信号
+
+add-action： 当 wire 的信号改变时触发 action
+
+#### 构造基本电路单元和复合电路单元
+
+通过这些基本构件，我们可以构造出电路的基本元件，如 `inverter `  (反门)， `and-gate` (与门)， `or-gate` (或门)。
+
+同时，再基于这些基本单元，我们可以实现 half-adder 和 fall-adder. 以及习题中提到的 ripple-carry-adder 等。
+
+### 利用赋值实现基本构件
+
+现在，让我们回到 wire 的构造，我们通过赋值和消息传递来实现 “持有一个值” 的 computational object 即 wire。
+
+以及其相关的基本过程。
+
+
+
+## 利用 Agenda 模拟时间流动
