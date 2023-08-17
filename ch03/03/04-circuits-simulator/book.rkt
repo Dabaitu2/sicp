@@ -1,4 +1,5 @@
 #lang sicp
+;; Follow the book sequences
 
 ;; Simulate circuit
 ;; Basic Element:
@@ -127,9 +128,9 @@
   ;; define inner procedure
   (define (invert-input)
     (let ([new-value (logical-not (get-signal input))])
-      (after-delay
-       inverter-delay
-       (lambda () (set-signal! output new-value)))))
+      (after-delay inverter-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
   (add-action! input invert-input))
 
 (define (logical-not s)
@@ -142,9 +143,9 @@
   (define (and-action-procedure)
     (let ([new-value (logical-and (get-signal a1)
                                   (get-signal a2))])
-      (after-delay
-       and-gate-delay
-       (lambda () (set-signal! output new-value)))))
+      (after-delay and-gate-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
   ;; either change of input signal will cause output change
   (add-action! a1 and-action-procedure)
   (add-action! a2 and-action-procedure))
@@ -156,9 +157,9 @@
   (define (or-action-procedure)
     (let ([new-value (logical-or (get-signal o1)
                                  (get-signal o2))])
-      (after-delay
-       or-gate-delay
-       (lambda () (set-signal! output new-value)))))
+      (after-delay or-gate-delay
+                   (lambda ()
+                     (set-signal! output new-value)))))
   ;; either change of input signal will cause output change
   (add-action! o1 or-action-procedure)
   (add-action! o2 or-action-procedure))
@@ -181,7 +182,8 @@
             (call-each action-procedures))
           'done))
     (define (accept-action-procedure! proc)
-      (set! action-procedures (cons proc atmospheric)))
+      (set! action-procedures
+            (cons proc action-procedures)))
     (define (dispatch m)
       (cond
         [(eq? m 'get-signal) signal-value]
@@ -197,7 +199,6 @@
         ((car procedures))
         (call-each (cdr procedures)))))
 
-
 ;; now we need to achive `delay`, it requires us to have a overview of the sequence and time of happening of each thing of it
 ;; and it can schedue all the actions. like a runtime event queue?
 ;; we use the data structure `Agenda` to do so
@@ -209,6 +210,19 @@
 #| • (current-time ⟨agenda⟩) returns the current simulation time. |#
 
 ;; still, wishful thinking first
+(define (make-agenda)
+  (display "TODO"))
+(define (empty-agenda? agenda)
+  (display "TODO"))
+(define (first-agenda-item agenda)
+  (display "TODO"))
+(define (add-to-agenda! time action agenda)
+  (display "TODO"))
+(define (remove-first-agenda-item! agenda)
+  (display "TODO"))
+(define (current-time agenda)
+  (display "TODO"))
+
 (define (after-delay delay action)
   (add-to-agenda! (+ delay (current-time the-agenda))
                   action
@@ -218,11 +232,34 @@
 (define (propagate)
   (if (empty-agenda? the-agenda)
       'done
-      (let ((first-item (first-agenda-item the-agenda)))
+      (let ([first-item (first-agenda-item the-agenda)])
         (first-item)
         (remove-first-agenda-item! the-agenda)
         (propagate))))
 
-
 ;; sample simulation: probe
 ;; it just display the signal value if it change
+(define (probe name wire)
+  (add-action! wire
+               (lambda ()
+                 (newline)
+                 (display name)
+                 (display " ")
+                 (display (current-time the-agenda))
+                 (display " New-value = ")
+                 (display (get-signal wire)))))
+
+(define the-agenda (make-agenda))
+(define inverter-delay 2)
+(define and-gate-delay 3)
+(define or-gate-delay 5)
+
+(define input-1 (make-wire))
+(define input-2 (make-wire))
+(define sum (make-wire))
+(define carry (make-wire))
+
+(probe 'sum sum)
+(probe 'carry carry)
+
+(half-adder input-1 input-2 sum carry)
