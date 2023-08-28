@@ -166,3 +166,18 @@ add-action： 当 wire 的信号改变时触发 action
 
 
 ## 利用 Agenda 模拟时间流动
+
+我们手动操控信号的过程，需要依赖时间流动才可以传导到其他的 wire，因此我们需要有一个 "时间模拟器"
+在这里我们可以引入 Agenda 这样一个概念来模拟时间流动。agenda 并不是真的模拟了时间一秒一秒的流动。
+而是一个 cons, 如下所示
+
+```scheme
+(define agenda (cons current-time time-segements))
+(define time-segement (cons time queue))
+```
+
+第一项当前的时间，agenda 模拟时间流动的方式并不是一秒一秒的计数，而是一次运行一个 time-segement,
+time-segment 会告诉 agenda 此时应该是什么时间, 并且会执行 segement 所包含的所有任务。
+
+
+## 3.3.5 Propagation of Constraints
