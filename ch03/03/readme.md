@@ -16,7 +16,7 @@
 
 针对原先的 list 结构，由于它是由 序对 pair 构成的 ,  我们会引入两个新的操作 `set-car!` 和 `set-cdr!`  来修改 cons 的 car 和 cdr 部分，一个典型的例子如下：
 
-![image-20230628212157965](/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230628212157965.png)
+![image-20230628212157965](../02/images/image-20230628212157965.png)
 
 利用这两个原子操作和 `get-new-pair` ，我们也直接实现 cons 方法。
 
@@ -79,11 +79,11 @@
 
 为了实现一个 FIFO 队列，我们通常需要额外维护一个简单 pair 去指向队尾和队首，方便实现入队和出队。这样在面对插入操作时我们可以直接追加到 rear 指向的 pair 之后。而出队时也可以直接修改 front-ptr 的指向即可。
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230710212814161.png" alt="image-20230710212814161" style="zoom:67%;" />
+<img src="./images/image-20230710212814161.png" alt="image-20230710212814161" style="zoom:67%;" />
 
 ## 3.3.3 Tables
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230710213108539.png" alt="image-20230710213108539" style="zoom:60%;" />
+<img src="./images/image-20230710213108539.png" alt="image-20230710213108539" style="zoom:60%;" />
 
 上面两章都是比较实践性的内容，主要就是在展示利用赋值可以实现一些较为复杂的数据结构
 
@@ -125,7 +125,7 @@ We provide some helper to extract information out of the table.
   (list '*table*))
 ```
 
-![image-20230716223809045](/Users/tomokokawase/Desktop/Learning/sicp/ch03/03/images/image-20230716223809045.png)
+![image-20230716223809045](./images/image-20230716223809045.png)
 
 two-dimensional table is still the abstract of sub one-dimensional tables
 
@@ -141,15 +141,17 @@ two-dimensional table is still the abstract of sub one-dimensional tables
 
 #### 基本构件和过程
 
-在这里，我们认为我们需要基本构件 `wire` , 基本过程 `（make-wire) ` `(get-signal wire)` , `（set-signal! wire signal)` 和 `(add-action wire action)`
+在这里，我们认为我们需要基本构件 `wire` ,
+
+基本过程 `（make-wire) ` `(get-signal wire)` , `（set-signal! wire signal)` 和 `(add-action wire action)`
 
 Wire 是一个持有 signal 的对象, 这里看起来有点反常识，我们总认为 wire 只是流过 signal，但是在模拟的过程中，它持有 signal 是最方便的。
 
-get-signal： 从 wire 中获取当前信号
+**get-signal**： 从 wire 中获取当前信号
 
-set-signal：改变 wire 中的信号
+**set-signal**：改变 wire 中的信号
 
-add-action： 当 wire 的信号改变时触发 action
+**add-action**： 当 wire 的信号改变时触发 action
 
 #### 构造基本电路单元和复合电路单元
 
@@ -181,3 +183,90 @@ time-segment 会告诉 agenda 此时应该是什么时间, 并且会执行 segem
 
 
 ## 3.3.5 Propagation of Constraints
+
+the general procedure we used is just a one-directional computation
+like (define c (+ a b)) => c = a + b,
+we couldn't get value of `a` if we know `b` & `c`, even through we know there do have such relation
+
+by putting forward the concept of `constraint`
+we want to build a system which can describe such relation
+and can get any part of the relation if other necessary parts are ready
+so if we know c and a, we can get b immediately
+
+constraint system is very similar as our circuit simulator
+but it's acutally more simple cause we don't need to care about latency and agenda
+
+all changes will be put into effect immediately (it's a hagiographic system)
+an example looks like belowing chart, every large rect is a `constraint` (the primitive unit of our system)
+and they can be connected by conncetor which looks like the circuit simulator's *wire*
+
+
+
+                      relationship between Fahrenheit and Celsius temperatures
+    
+                                       9C = 5(F - 32)
+
+
+             ┌──────────────┐           ┌──────────────┐            ┌──────────────┐
+             │              │           │              │     v      │              │
+       C ────┤ m1           │           │           m1 ├────────────┤ a1           │
+             │              │    u      │              │            │              │
+             │       *    P ├───────────┤ P     *      │            │       +    s ├──── F
+             │              │           │              │            │              │
+         ┌───┤ m2           │           │           m2 ├──┐      ┌──┤ a2           │
+         │   │              │           │              │  │      │  │              │
+         │   └──────────────┘           └──────────────┘  │      │  └──────────────┘
+        w│                                              x │      │ y
+         │     ┌──────┐                           ┌────┐  │      │  ┌─────┐
+         └─────┤ 9    │                           │ 5  ├──┘      └──┤ 32  │
+               └──────┘                           └────┘            └─────┘
+
+#### How does it work?
+
+```scheme
+(define C (make-connector))
+(define F (make-connector))
+
+(define (celsius-fahrenheit-converter c f)
+  (let ((u (make-connector))
+        (v (make-connector))
+        (w (make-connector))
+        (x (make-connector))
+        (y (make-connector)))
+    (multiplier c w u)
+    (multiplier v x u)
+    (adder v y f)
+    (constant 9 w)
+    (constant 5 x)
+    (constant 32 y)
+    'ok))
+
+(celsius-fahrenheit-converter C F)
+(probe "Celsius temp" C)
+(probe "Fahrenheit temp" F)
+
+;; tells C that this directive comes from the user.
+(set-value! C 25 'user)
+;; Probe: Celsius temp = 25
+;; Probe: Fahrenheit temp = 77
+;; done
+
+;; (set-value! F 212 'user)
+;; Error! Contradiction (77 212)
+;; cause the constraint system has hold the value for connector C and F
+
+(forget-value! C 'user)
+;; we can let the conncetor C forget it's value of 'user, and the related F will be forgot too
+;; Probe: Celsius temp = ?
+;; Probe: Fahrenheit temp = ?
+;; Probe
+
+(set-value! F 212 'user)
+;; Probe: Fahrenheit temp = 212
+;; Probe: Celsius temp = 100
+;; done
+
+;; this system works for both C -> F and F -> C
+;; nondirectionality is the distinguishing feature of constraint-based systems
+```
+

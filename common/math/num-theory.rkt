@@ -51,6 +51,7 @@
     (find-divisor 2))
   (= n (smallest-divisor n)))
 
+
 ;; Sigma 求和
 (define (sum term a next b)
   (if (> a b)
@@ -63,6 +64,7 @@
   (define (add-dx x)
     (+ x dx))
   (* (sum f (+ a (/ dx 2.0)) add-dx b) dx))
+
 
 (#%provide cube
            square
