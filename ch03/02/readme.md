@@ -41,7 +41,7 @@
 
 ### 创建过程
 
-在 environmen model of evaluation 中，一个过程总是由一些代码和一个指向 **求值(evaluate) 该 λ 表达式的环境** 的指针构成的 pair。对于过程的定义本质上是**求值一个 lambda 表达式**并将其 bind 到一个 variable
+在 environmen model of evaluation 中，一个过程总是由一些代码和一个指向 **求值(evaluate) 该 λ 表达式的环境** 的指针构成的 pair。对于过程的定义本质上是**求值一个  λ 表达式**并将其 bind 到一个 variable
 
 ```scheme
 (define (square x)
@@ -115,9 +115,9 @@
 
 其计算方式如下：
 
-![image-20230626073220549](/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626073220549.png)
+![image-20230626073220549](../02/images/image-20230626073220549.png)
 
-![image-20230626073310747](/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626073310747.png)
+![image-20230626073310747](../02/images/image-20230626073310747.png)
 
 1. 过程创建:  `square`, `sum-of-squares`  和 `f` 的 bindings 都被放入全局环境的 frame 中
 
@@ -161,7 +161,7 @@
 
 第一个 define 很简单，本身是实现如下变化：创建一个过程对象，存储 body，形式参数，并指向创建该过程对象的环境。
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626182734916.png" alt="image-20230626182734916｜" style="zoom:70%;" />
+<img src="../02/images/image-20230626182734916.png" alt="image-20230626182734916｜" style="zoom:70%;" />
 
 ```scheme
 (define make-withdraw
@@ -177,7 +177,7 @@
 
 内部表达式又是一个 lambda 表达式。再次生成一个过程对象如下：
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626183250037.png" alt="image-20230626183250037" style="zoom:70%;" />
+<img src="../02/images/image-20230626183250037.png" alt="image-20230626183250037" style="zoom:70%;" />
 
 此时的过程对象的外界环境指向的就是 E1。最后将这个过程对象绑定到 global Env 的 W1.
 
@@ -188,7 +188,7 @@
 3. 开始求值内部表达式， 通过环境链表我们可以依次找到 amount 和 balance，并应用到环境表达式中计算。
 4. 调用 `set!` 时，balance 的 binding 会被修改，修改后的 balance 的 binding 会是 50.
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626192917971.png" alt="image-20230626192917971" style="zoom:67%;" />
+<img src="../02/images/image-20230626192917971.png" alt="image-20230626192917971" style="zoom:67%;" />
 
 而我们如果重新定义一个 `(define W2 (make-withdraw 100))` 会产生一个全新的环境，而环境中的 bindings 就不会相互冲突。因此能够实现对象局部状态的修改不会影响到下一个对象。
 
@@ -210,4 +210,4 @@
 
 ```
 
-<img src="/Users/tomokokawase/Desktop/Learning/sicp/ch03/02/images/image-20230626200416328.png" alt="image-20230626200416328" style="zoom:67%;" />
+<img src="../02/images/image-20230626200416328.png" alt="image-20230626200416328" style="zoom:67%;" />
