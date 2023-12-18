@@ -113,6 +113,7 @@
                               (stream-cdr s2)))]))]))
 
 (define ones (cons-stream 1 ones))
+(define integers (cons-stream 1 (add-stream ones integers)))
 
 (#%provide cons-stream
            stream-cdr
@@ -128,4 +129,6 @@
            add-stream
            mul-streams
            scale-stream
+           integers
+           ones
            merge)

@@ -10,13 +10,13 @@
 
 ;; 我们针对 delay 再增加一层缓存优化
 (define (memo-proc proc)
-  (let ((already-run? false)
-        (result false))
+  (let ([already-run? false] [result false])
     (lambda ()
       (if (not already-run?)
-          (begin (set! result (proc))
-                 (set! already-run? true)
-                 result)
+          (begin
+            (set! result (proc))
+            (set! already-run? true)
+            result)
           result))))
 
 (define (delay exp)
@@ -61,8 +61,9 @@
 (define (stream-for-each proc s)
   (if (stream-null? s)
       'done
-      (begin (proc (stream-car s))
-             (stream-for-each proc (stream-cdr s)))))
+      (begin
+        (proc (stream-car s))
+        (stream-for-each proc (stream-cdr s)))))
 
 (define (display-stream s)
   (stream-for-each display-line s))
@@ -71,28 +72,34 @@
   (newline)
   (display x))
 
-
 (define (stream-enumerate-interval low high)
   (if (> low high)
       the-empty-stream
-      (cons-stream
-       low
-       (stream-enumerate-interval (+ low 1) high))))
+      (cons-stream low
+                   (stream-enumerate-interval (+ low 1)
+                                              high))))
 
 (define (stream-filter pred stream)
-  (cond ((stream-null? stream) the-empty-stream)
-        ((pred (stream-car stream))
-         (cons-stream (stream-car stream)
-                      (stream-filter pred
-                                     (stream-cdr stream))))
-        (else (stream-filter pred (stream-cdr stream))))
-  )
+  (cond
+    [(stream-null? stream) the-empty-stream]
+    [(pred (stream-car stream))
+     (cons-stream (stream-car stream)
+                  (stream-filter pred (stream-cdr stream)))]
+    [else (stream-filter pred (stream-cdr stream))]))
 
 ;; (define (get-prime-of-interval a b)
 ;;   (stream-car (stream-cdr (stream-filter prime? (stream-enumerate-interval a b)))))
 ;;
 ;; (get-prime-of-interval 10000 100000)
 
-
-(#%provide cons-stream stream-cdr stream-car stream-null? the-empty-stream stream-enumerate-interval display-line stream-map stream-ref display-stream stream-filter)
-
+(#%provide cons-stream
+           stream-cdr
+           stream-car
+           stream-null?
+           the-empty-stream
+           stream-enumerate-interval
+           display-line
+           stream-map
+           stream-ref
+           display-stream
+           stream-filter)

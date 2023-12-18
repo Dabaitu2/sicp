@@ -112,6 +112,7 @@
 
 ;; 利用伪除, 我们可以规避浮点数精度计算的问题, 再将被放大的系数除去，即可获得正确的最大公因式
 (remainder-terms (term-list q1) (term-list q2))
+
 (pseudoremainder-terms (term-list q1) (term-list q2))
 (greatest-common-divisor q1 q2)
 

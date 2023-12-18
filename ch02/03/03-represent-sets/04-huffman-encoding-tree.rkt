@@ -187,4 +187,4 @@
   (successive-merge (make-leaf-set pairs)))
 
 ;; same as sample tree in 68.rkt
-;; (generate-huffman-tree '((A 4) (B 2) (D 1) (C 1)))
+(generate-huffman-tree '((A 4) (B 2) (D 1) (C 1)))

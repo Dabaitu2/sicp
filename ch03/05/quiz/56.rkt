@@ -32,3 +32,4 @@
 (stream-ref s 4)
 (stream-ref s 5)
 (stream-ref s 7)
+(stream-ref s 9)
