@@ -112,6 +112,17 @@
                        (merge (stream-cdr s1)
                               (stream-cdr s2)))]))]))
 
+(define (enumerate-interval low high)
+  (if (> low high)
+      nil
+      (cons low (enumerate-interval (+ low 1) high))))
+
+(define (stream-refs count stream)
+  (map (lambda (s) (stream-ref stream s))
+       (enumerate-interval 0 (- count 1))))
+
+;; 生成 0 - n 的列表
+
 (define ones (cons-stream 1 ones))
 (define integers (cons-stream 1 (add-stream ones integers)))
 
@@ -131,4 +142,5 @@
            scale-stream
            integers
            ones
-           merge)
+           merge
+           stream-refs)

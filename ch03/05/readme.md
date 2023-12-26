@@ -26,3 +26,9 @@ All of those problems are mainly due to we want to simulate this world's change 
 我们的数据从函数中进行传递的时候不可避免地遇到大量复制和构造。这样的操作是**批处理**的。
 也就是说，我们在必须完成了第一个函数的所有数据处理，才能传给下一个。
 
+
+
+;; 其低效之处在于： 我们通过 (stream-car (stream-cdr (sqrt-stream 2)))
+;; 去获得一个结果时，内部需要求值两次 (sqrt-stream 2) ，如果我们直接使用一个 guess 去替代
+;; 那么 memo-proc 缓存会避免 sqrt-stream 中间去反复求值, 而如果不使用 guess，则
+;; 对相同函数的两次调用将无法共享缓存的结果。因此会产生大量的重复计算。
