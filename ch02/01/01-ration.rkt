@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 实现有理数的四则运算 a/b -> 有理数
 ;; numer 求分子

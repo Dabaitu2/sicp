@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 结合求 gcd 的操作将有理函数化简为最简形式
 

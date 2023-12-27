@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; only reduce fraction on condition that n & d are all integer
 (define (make-rat n d)

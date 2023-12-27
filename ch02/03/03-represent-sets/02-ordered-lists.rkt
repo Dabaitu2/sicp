@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 使用 ordered lists 表示以加速集合操作
 ;; 为了简化讨论，此处的元素都是数值

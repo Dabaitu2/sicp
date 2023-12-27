@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../../common/conventional-interface.rkt")
+(#%require "../../common/data/conventional-interface.rkt")
 
 ;; 用 accumulate 和 map 来表示 count-leaves
 (define (count-leaves t)

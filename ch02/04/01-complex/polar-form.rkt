@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "../../../common/math/num-theory.rkt")
 
 ;; 方案二则反过来

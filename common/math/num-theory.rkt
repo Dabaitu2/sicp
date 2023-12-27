@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 ;; 基本的数学操作
 
 (define (cube x)

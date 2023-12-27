@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "../../../common/math/num-theory.rkt")
 
 ;; 方案1 利用了如下的三角关系

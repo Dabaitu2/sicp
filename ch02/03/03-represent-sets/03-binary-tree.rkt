@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; selectors
 (define (entry tree)

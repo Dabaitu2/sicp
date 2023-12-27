@@ -1,7 +1,6 @@
 #lang sicp
 
-(#%require "../../common/conventional-interface.rkt")
-(#%require "../../common/math/num-theory.rkt")
+(#%require "../../../common/data/conventional-interface.rkt")
 
 ;; helpers
 (define (equal-sum? pair sum)

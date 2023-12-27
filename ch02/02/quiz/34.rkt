@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../../common/conventional-interface.rkt")
+(#%require "../../common/data/conventional-interface.rkt")
 
 ;; 通过 Horner 规则计算多项式
 ;; a_nx^n + a_{n-1}x^{n-1}+....+a_1x+a0

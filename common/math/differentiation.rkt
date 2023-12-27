@@ -1,5 +1,5 @@
-#lang racket
-(#%require "../../common/conventional-interface.rkt")
+#lang sicp
+(#%require "../../common/data/conventional-interface.rkt")
 
 ;; 函数求导!
 

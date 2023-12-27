@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ; helpers
 (define (memq item x)

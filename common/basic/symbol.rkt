@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 如果两个表包含着同样元素，这些元素也按同样顺序排列，那么就称这两个表为 equal ?
 (define (equal? a b)
