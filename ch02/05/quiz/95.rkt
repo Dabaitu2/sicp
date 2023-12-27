@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 (#%require "../03-symbolic-algebra/complex.rkt")
 (#%require "../03-symbolic-algebra/rational.rkt")

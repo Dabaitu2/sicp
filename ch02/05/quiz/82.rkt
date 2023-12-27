@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 这个给出的 coercion 策略的不够通用的问题在于, 如果存在一个方法，其所接受的类型高于目前传入参数的所有
 ;; 类型 (Supertype) 则会导致所有参数无法 raise 到那个 supertype, 因为仅仅尝试了参数所提供的那部分类型

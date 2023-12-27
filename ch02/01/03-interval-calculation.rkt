@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 ;; 2.1.4 实例: 区间算数
 ;; 抽象的几个要点
 ;; 1. 像 TDD 一样的先设计用户层的数据操作，wishful thinking

@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 (define (left-branch tree)
   (cadr tree))

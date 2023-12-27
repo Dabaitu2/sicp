@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 传统的定长编码 (fixed-length) 对所有字符采用相同长度的编码位数，
 ;; 而对于某些场景下，不同的字符在信息中出现的密度和频次不同，他们可以利用不同长度的编码来表示(频度高的编码更短)
@@ -187,4 +187,4 @@
   (successive-merge (make-leaf-set pairs)))
 
 ;; same as sample tree in 68.rkt
-;; (generate-huffman-tree '((A 4) (B 2) (D 1) (C 1)))
+(generate-huffman-tree '((A 4) (B 2) (D 1) (C 1)))

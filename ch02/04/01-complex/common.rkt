@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "./normal-form.rkt")
 
 ;; 复数的直角坐标系表示更适合加减法

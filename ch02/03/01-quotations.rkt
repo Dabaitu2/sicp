@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 (define a 1)
 (define b 2)

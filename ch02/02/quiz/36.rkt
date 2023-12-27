@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../../common/conventional-interface.rkt")
+(#%require "../../common/data/conventional-interface.rkt")
 
 (define (accumulate-n op init seqs)
   (if (null? (car seqs))

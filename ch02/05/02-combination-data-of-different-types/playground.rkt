@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "./complex.rkt")
 (#%require "./rational.rkt")
 (#%require "./integer.rkt")

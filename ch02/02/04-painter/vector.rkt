@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 构造向量
 ;; 整个 Painter 库都在遵循一个抽象数据的基本法则

@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 (#%require "../04-painter/frame.rkt")
 (#%require "../04-painter/vector.rkt")

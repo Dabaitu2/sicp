@@ -1,5 +1,5 @@
 #lang racket
-(#%require "../../common/conventional-interface.rkt")
+(#%require "../../common/data/conventional-interface.rkt")
 
 ;; k皇后问题的递归解法
 ;; 1. 假设k-1问题已经得到解决，形成了一些k-1序列, 针对每一个序列，对k位构成的k种可能，检查每种可能

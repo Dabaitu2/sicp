@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../../common/conventional-interface.rkt")
+(#%require "../../common/data/conventional-interface.rkt")
 
 ;; 使用 accumulate 实现底层逻辑
 (define (map proc sequence)

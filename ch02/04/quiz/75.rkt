@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "../../../common/math/num-theory.rkt")
 
 ;; 我们之前所提到的 数据导向 的设计方案

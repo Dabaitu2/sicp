@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "./tag-tools.rkt")
 (#%require "./env.rkt")
 ;; (#%require "./coercion.rkt")
@@ -72,7 +72,7 @@
             (no-method type-tags)))))
 
   (let ([proc (get op type-tags)])
-    (define is_not_multiple_op (> 2 (length type-tags)))
+    ;; (define is_not_multiple_op (> 2 (length type-tags)))
     (if proc
         (let ([res (apply proc (map contents args))])
           (drop res)

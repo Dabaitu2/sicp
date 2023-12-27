@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 ;; 使用 unordere list 表示
 ;; helpers
