@@ -19,7 +19,7 @@
 (define (RC R C dt)
   (lambda (i v0)
     (add-stream (scale-stream i R)
-                (integral (scale-stream i (/ 1 C)) v0 dt))))
+                (integral-stream (scale-stream i (/ 1 C)) v0 dt))))
 
 (define RC1 (RC 5 1 0.5))
-(stream-refs 100 (RC1 ones 4))
+(stream-refs 10 (RC1 ones 4))

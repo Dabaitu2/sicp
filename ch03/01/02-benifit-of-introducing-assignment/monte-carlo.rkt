@@ -43,7 +43,7 @@
   (sqrt (/ 6 (monte-carlo trials cesaro-test))))
 
 ;; the result is not we expected, that's because our LCG is too naive ..
-#| (estimate-pi 100000) |#
+;; (estimate-pi 100000)
 
 
 ;; mento carlo integration

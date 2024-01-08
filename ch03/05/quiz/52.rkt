@@ -15,20 +15,20 @@
 (define z
   (stream-filter (lambda (x) (= (remainder x 5) 0)) seq))
 
-(display-stream seq)
-(newline)
-(display "sum:")
-(display sum)
-(newline)
+;; (display-stream seq)
+;; (newline)
+;; (display "sum:")
+;; (display sum)
+;; (newline)
 (stream-ref y 7)
-(newline)
-(display "sum:")
-(display sum)
-(newline)
+;; (newline)
+;; (display "sum:")
+;; (display sum)
+;; (newline)
 (display-stream z)
-(newline)
-(display "sum:")
-(display sum)
+;; (newline)
+;; (display "sum:")
+;; (display sum)
 
 ;; 如果我们不把 delay 做 memo 的话
 ;; 响应结果会不会有什么不同?
