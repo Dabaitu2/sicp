@@ -166,12 +166,25 @@
     (weighted-pairs (stream-cdr s) (stream-cdr t) weight)
     weight)))
 
-(define (integral integrand initial-value dt)
+;; 求积分的近似，本质上就是用一个粗粒度的 y 值来替这段时间的连续变化的 y 值
+;; 只要 x 的变化越来越小，那么计算结果就越来越接近积分值
+(define (integral-stream integrand initial-value dt)
   (define int
     (cons-stream initial-value
                  (add-stream (scale-stream integrand dt)
                              int)))
   int)
+
+(define (delay-integral delayed-integrand initial-value dt)
+  (define int
+    (cons-stream
+     initial-value
+     (let ([integrand (force delayed-integrand)])
+       (add-stream (scale-stream integrand dt) int))))
+  int)
+
+(define (list->stream l)
+  (cons-stream (car l) (list->stream (cdr l))))
 
 (#%provide cons-stream
            stream-cdr
@@ -194,4 +207,7 @@
            pairs
            weighted-pairs
            merge-weighted
-           integral)
+           integral-stream
+           delay-integral
+           list->stream
+           )

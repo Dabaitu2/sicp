@@ -42,7 +42,8 @@
 (define (set-record-subtable record subtable)
   (set-cdr! (cdar record) subtable))
 
-;; main logic
+;; main logic, 支持针对 key 存放的顺序进行特定排序的 table
+;; 这有点像数据库中建立索引的操作
 (define (make-table table-key key-eq? key-gt? key-lt?)
 
   (let ([local-table (make-record table-key '() '())])

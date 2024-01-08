@@ -24,4 +24,5 @@
 (rand 'generate) 
 (rand 'generate) 
 ((rand 'reset) 0) 
+;; ((rand 'reset) 898989) 
 (rand 'generate) 

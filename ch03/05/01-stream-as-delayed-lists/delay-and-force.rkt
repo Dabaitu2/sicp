@@ -1,12 +1,12 @@
-#lang racket
+#lang sicp
 ;; 如何实现 Delay 和 force ？
 ;; 实际上方案是相当朴素的, 就是 currying 的思想
 ;; (define (delay exp)
 ;;   (lambda () exp))
 ;;
 ;; force 就是针对这个对象再求一次值就可以了
-(define (force delayed-obj)
-  (delayed-obj))
+;; (define (force delayed-obj)
+;;   (delayed-obj))
 
 ;; 我们针对 delay 再增加一层缓存优化
 (define (memo-proc proc)
@@ -19,11 +19,11 @@
             result)
           result))))
 
-(define (delay exp)
-  (memo-proc (lambda () exp)))
+;; (define (delay exp)
+;;   (memo-proc (lambda () exp)))
 
-(define (cons-stream x y)
-  (cons x (delay y)))
+;; (define (cons-stream x y)
+;;   (cons x (delay y)))
 
 (define (stream-car stream)
   (car stream))
@@ -92,14 +92,15 @@
 ;;
 ;; (get-prime-of-interval 10000 100000)
 
-(#%provide cons-stream
-           stream-cdr
-           stream-car
-           stream-null?
-           the-empty-stream
-           stream-enumerate-interval
-           display-line
-           stream-map
-           stream-ref
-           display-stream
-           stream-filter)
+(#%provide
+ ;; cons-stream
+ stream-cdr
+ stream-car
+ stream-null?
+ the-empty-stream
+ stream-enumerate-interval
+ display-line
+ stream-map
+ stream-ref
+ display-stream
+ stream-filter)

@@ -25,8 +25,9 @@
 ;;
 ;; 然而同样的情况却无法用在 make-simplified-withdraw
 ;; (W 20) -> ((make-simplified-withdraw 25) 20) -> ((lambda (amount) (set! balance (- 25 amount)) 25) 20)
-;; -> (set! (balance (- 25 20))) 25 -> 25
-;; 这是不符合实际意义的, 这意味着代换模型无法用在具有赋值情况的过程中
+;; -> (set! (balance (- 25 20))) 25) -> 25
+;; 这是不符合实际意义的(因为 set 已经将后一个 balance 的值改变了，此处不能直接代换成 25),
+;; 这意味着代换模型无法用在具有赋值情况的过程中
 ;; 同引号的引入破坏了 "值可以直接相互代换" (转变为在不同的上下文下可能有不同的表现) 的设想一样
 ;; 这两者都打破了 “referentially transparent" 这一性质
 

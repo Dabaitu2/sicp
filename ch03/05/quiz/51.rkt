@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 
 (#%require
  "../01-stream-as-delayed-lists/delay-and-force.rkt")
@@ -13,3 +13,16 @@
 (newline)
 (stream-ref x 5)
 (stream-ref x 7)
+(stream-ref x 6)
+
+;; 0
+;; ----------------------------------------
+;;
+;; 1
+;; 2
+;; 3
+;; 4
+;; 55
+;;
+;; 6
+;; 77
