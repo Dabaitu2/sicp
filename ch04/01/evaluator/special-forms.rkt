@@ -1,29 +1,14 @@
 #lang sicp
 
-;; 使用数据抽象技术(抽象屏障), 分离操作规则和定义细节之间的联系
-;; 也就是封装细节到 api 里，只暴露 api 给上层
-;; 这里面的表达式全部都是利用list首个元素的特殊 tag 来表现的
-;; 和 2.4 里面实现数据计算 package 的思路非常相似
-(define (self-evaluating? exp)
-  (cond
-    [(number? exp) true]
-    [(string? exp) true]
-    [else false]))
-
-(define (variable? exp)
-  (symbol? exp))
+(#%require "./utils.rkt")
 
 ;; 判断一个表达式是不是引号表达式其实就是看一个 list 的开头是不是某个特定符号
 ;; 这也是 lisp 比较优雅的地方，语法结构非常简单
 ;; 所有的东西其实都可以看作是 pair (cons) 构成的, 而不像其他语言那样要针对不同的语法结构写复杂的 parser
 (define (quoted? exp)
   (tagged-list? exp 'quote))
-
 (define (text-of-quotation exp)
   (cadr exp))
-
-(define (tagged-list? exp tag)
-  (if (pair? exp) (eq? (car exp) tag) false))
 
 ;; 处理赋值表达式
 (define (assignment? exp)
@@ -104,48 +89,10 @@
 (define (make-begin seq)
   (cons 'beigin seq))
 
-;; 处理对过程的应用 (即 (add 1 2) 之类的表达式, 有可能参数也是表达式)
-(define (application? exp)
-  (pair? exp))
-(define (operator exp)
-  (car exp))
-(define (operands exp)
-  (cdr exp))
-(define (no-operands? ops)
-  (null? ops))
-(define (first-operand ops)
-  (car ops))
-(define (rest-operands ops)
-  (cdr ops))
-
-;; 派生表达式 Derived Expression
-;; 基于其他特殊形式的表达式定义出来的特殊形式，不用直接去实现
-;; 例如 cond 就可以看成嵌套执行 if
-(define (cond? exp)
-  (tagged-list? exp 'cond))
-(define (cond-clauses exp)
-  (cdr exp))
-(define (cond-else-clause? clause)
-  (eq? (cond-predicate clause) 'else))
-(define (cond-predicate clause)
-  (car clause))
-(define (cond-actions clause)
-  (cdr clause))
-(define (cond->if exp)
-  (expand-clauses (cond-clauses exp)))
-
-(define (expand-clauses clauses)
-  (if (null? clauses)
-      `false
-      (let ([first (car clauses)] [rest (cdr clauses)])
-        (if (cond-else-clause? first)
-            ;; 基准情形，分析到了 else，且 else 理应是最后一个 clause, 如果不是就会抛错
-            (if (null? rest)
-                (sequence->exp (cond-actions first))
-                (error "ELSE clause isn't last -- COND->IF"
-                       clauses))
-            ;; 递归创建
-            (make-if (cond-predicate first)
-                     (sequence->exp (cond-actions first))
-                     (expand-clauses rest))))))
-
+(#%provide sequence->exp
+           make-if
+           text-of-quotation
+           lambda-parameters
+           lambda-body
+           begin-actions
+           )
