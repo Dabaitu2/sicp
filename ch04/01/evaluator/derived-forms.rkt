@@ -1,7 +1,9 @@
 #lang sicp
 
 (#%require "./utils.rkt")
+(#%require "./evaln.rkt")
 (#%require "./special-forms.rkt")
+(#%require "../../../common/data/table.rkt")
 
 ;; 派生表达式 Derived Expression
 ;; 基于其他特殊形式的表达式定义出来的特殊形式，不用直接去实现
@@ -13,26 +15,132 @@
   (cdr exp))
 (define (cond-else-clause? clause)
   (eq? (cond-predicate clause) 'else))
+(define (cond-=>-clause? clause)
+  (eq? '=> (cadr clause)))
 (define (cond-predicate clause)
   (car clause))
 (define (cond-actions clause)
   (cdr clause))
-(define (cond->if exp)
-  (expand-clauses (cond-clauses exp)))
+(define (cond-=>recipient clause)
+  (caddr clause))
+(define (cond->if exp env)
+  (expand-clauses (cond-clauses exp) env))
 
-(define (expand-clauses clauses)
+(define (expand-clauses clauses env)
   (if (null? clauses)
       `false
       (let ([first (car clauses)] [rest (cdr clauses)])
-        (if (cond-else-clause? first)
-            ;; 基准情形，分析到了 else，且 else 理应是最后一个 clause, 如果不是就会抛错
-            (if (null? rest)
-                (sequence->exp (cond-actions first))
-                (error "ELSE clause isn't last -- COND->IF"
-                       clauses))
-            ;; 递归创建
-            (make-if (cond-predicate first)
-                     (sequence->exp (cond-actions first))
-                     (expand-clauses rest))))))
+        (cond
+          [(cond-else-clause? first)
+           ;; 基准情形，分析到了 else，且 else 理应是最后一个 clause, 如果不是就会抛错
+           (if (null? rest)
+               (sequence->exp (cond-actions first))
+               (error "ELSE clause isn't last -- COND->IF"
+                      clauses))]
+          [(cond-=>-clause? first)
+           (let ([predicate (cond-predicate first)]
+                 [recipient (cond-=>recipient first)])
+             (make-if
+              predicate
+              ;; 此时的 recipient 还是一个没有求值完的表达式变量
+              ;; 要在环境中找到对应的值, 才能去交给 apply
+              (apply
+               (eval recipient env)
+               ;; 同样的 predicate 也只是一个表达式，没有求值，需要求出值了再送给 apply
+               (list (eval predicate env)))
+              (expand-clauses rest)))]
+          [else
+           (make-if (cond-predicate first)
+                    (sequence->exp (cond-actions first))
+                    (expand-clauses rest))]))))
 
-(#%provide cond->if)
+(define (eval-cond exp env)
+  (eval (cond->if exp env) env))
+
+(define (eval-and exps env)
+  (if (no-exps exps) true)
+  (make-if (first-exp exps)
+           (eval-and (rest-exps exps) env)
+           false))
+
+(define (eval-or exps env)
+  (if (no-exps exps) false)
+  (make-if (first-exp exps)
+           true
+           (eval-or (rest-exps exps) env)))
+
+(define (let? exp)
+  (tagged-list? exp 'let))
+(define (let-clauses exp)
+  (cdr exp))
+(define (let-bindings clause)
+  (car clause))
+(define (let-named-clause? clause)
+  (symbol? (car clause)))
+(define (let-named-name clause)
+  (car clause))
+(define (let-named-clause clause)
+  (car clause))
+(define (let-vars bindings)
+  (if (null? bindings)
+      '()
+      (cons (caar bindings) (let-vars (cdr bindings)))))
+(define (let-values bindings
+          )
+  (if (null? bindings)
+      '()
+      ;; 所有的表达式默认都是 list 而非 cons 组成
+      (cons (cadar bindings)
+            (let-values (cdr bindings)
+              ))))
+
+(define (let-body clause)
+  (cdr clause))
+
+(define (let->combination exp)
+  ;; 处理 命名 let
+  (if (let-named-clause? exp)
+      (let ([var (let-named-name exp)]
+            [defs (let-named-clause exp)])
+        (eval (make-let (list var defs) (let-body defs))))
+      (let ([bindings (let-bindings exp)])
+        (list (make-lambda (let-vars bindings)
+                           (let-body exp))
+              (let-values bindings
+                )))))
+
+(define (make-let bindings body)
+  ;; body 可能是一个 list, 所以用 cons 去连接
+  (cons 'let (cons bindings body)))
+(define (eval-let exp env)
+  (eval (let->combination (let-clauses exp)) env))
+
+;; let*
+(define (let*? exp)
+  (tagged-list? exp 'let*))
+(define (let*-bindings clause)
+  (car clause))
+(define (let*-body clause)
+  (cdr clause))
+
+;; 将 let* 转换为多个 let 嵌套
+(define (let*->nested-lets exp)
+  (define (expand-clauses bindings body)
+    (if (null? bindings)
+        body
+        (let ([first (car bindings)] [rest (cdr bindings)])
+          (make-let (list first)
+                    (expand-clauses rest body)))))
+  (expand-clauses (let*-bindings exp) (let*-body exp)))
+
+(define (eval-let* exp env)
+  (eval (let*->nested-lets exp) env))
+
+(define (install-derived-form-package)
+  (put 'exp 'cond eval-cond)
+  (put 'exp 'and eval-and)
+  (put 'exp 'or eval-or)
+  (put 'exp 'let eval-let)
+  (put 'exp 'let* eval-let*))
+
+(#%provide install-derived-form-package)

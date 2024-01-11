@@ -10,4 +10,7 @@
   (symbol? exp))
 
 
-(#%provide self-evaluating? variable?)
+(define (lookup-variable-value exp env)
+  (display "TODO"))
+
+(#%provide self-evaluating? variable? lookup-variable-value)

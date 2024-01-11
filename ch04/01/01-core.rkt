@@ -29,7 +29,7 @@
                      (lambda-body exp)
                      env)]
     [(begin? exp) (eval-sequence (begin-actions exp) env)]
-    [(cond? exp) (eval (cond->if exp) env)]
+    [(cond? exp) (eval (cond->if exp env))]
     [(application? exp)
      (apply (eval (operator exp) env)
             (list-of-values (operands exp) env))]
