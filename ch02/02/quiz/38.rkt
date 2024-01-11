@@ -1,12 +1,13 @@
 #lang sicp
 
-;; fold-right
-;; 之所以叫 fold-right 是因为它始终将第一个元素和他 右边 的所有元素的递归结果进行 fold
+;; fold-right 从 right 向 left 折叠, 最后折叠的元素是最左边的元素
+;; 就像折纸，从最右边开始向最左边折, 因此第一个执行的是最右边的元素
+;; f(1, f(2, f(3, z))), z = 1
 ;; 本质上他就是 accmulate, 由于我们需要从最后一个元素开始处理，所以必须使用递归
 (define (fold-right op initial sequence)
   (accumulate op initial sequence))
 
-;; fold-left 自然就是把最后一个元素和他左边的所有元素的递归结果进行 fold
+;; fold-left 则是从左向右折叠
 ;; 由于从第一个元素就开始处理，所以可以使用迭代
 (define (fold-left op initial sequence)
   (define (iter result rest)
@@ -25,6 +26,7 @@
 
 ;; 只有同时满足结合率和交换律的 op 才可以满足 fold-left 与 fold-right 结果一致
 ;; 3/1 = 3  2/3 = 2/3 1/(2/3) = 3/2
+;; f(1, f(2, f(3, z))), z = 1
 (fold-right / 1 (list 1 2 3))
 ;; 1/1=1   1/2=1/2   1/2/3 = 1/6
 (fold-left / 1 (list 1 2 3))

@@ -1,4 +1,4 @@
-#lang racket
+#lang sicp
 (#%require "../../common/data/conventional-interface.rkt")
 
 ;; k皇后问题的递归解法
@@ -48,3 +48,4 @@
 
 ;; (queens 8)
 (length (queens 8))
+(list-ref (queens 8) 4)

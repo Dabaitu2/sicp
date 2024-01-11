@@ -1,6 +1,8 @@
 #lang sicp
 
 (#%require "./utils.rkt")
+(#%require "./evaln.rkt")
+(#%require "../../../common/data/table.rkt")
 
 ;; 判断一个表达式是不是引号表达式其实就是看一个 list 的开头是不是某个特定符号
 ;; 这也是 lisp 比较优雅的地方，语法结构非常简单
@@ -13,12 +15,12 @@
 ;; 处理赋值表达式
 (define (assignment? exp)
   (tagged-list? exp 'set!))
-
 (define (assignment-variable exp)
   (cadr exp))
-
 (define (assignment-value exp)
   (caddr exp))
+(define (eval-assignment exp env)
+  (display "TODO"))
 
 ;; 处理定义表达式
 ;; 定义表达式有两种
@@ -31,24 +33,12 @@
 ;; 否则说明是过程定义，需要再深入一层拿变量名
 (define (definition-variable exp)
   (if (symbol? (cadr exp)) (cadr exp) (caddr exp)))
-
 (define (definition-value exp)
   (if (symbol? (cadr exp))
       (caddr exp)
       (make-lambda (cdadr exp) (cddr exp))))
-
-;; 处理 lambda 表达式
-(define (lambda? exp)
-  (tagged-list? exp 'lambda))
-
-(define (lambda-parameters exp)
-  (cadr exp))
-
-(define (lambda-body exp)
-  (cddr exp))
-
-(define (make-lambda parameters body)
-  (cons 'lambda (cons parameters body)))
+(define (eval-definition exp env)
+  (display "TODO"))
 
 ;; 处理 if 表达式
 (define (if? exp)
@@ -62,6 +52,9 @@
   (if (not (null? (cdddr exp))) (cadddr exp) 'false))
 (define (make-if predicate consequent alternative)
   (list 'if predicate consequent alternative))
+(define (eval-if exp env)
+  (display "TODO"))
+
 
 ;; 处理 begin 表达式
 (define (begin? exp)
@@ -74,6 +67,8 @@
   (car seq))
 (define (rest-exps seq)
   (cdr seq))
+(define (eval-beigin exp env)
+  (eval-sequence (begin-actions exp) env))
 
 ;; 将一个 sequence 变化为表达式
 ;; 如果只有一个表达式，则返回那个表达式
@@ -89,10 +84,36 @@
 (define (make-begin seq)
   (cons 'beigin seq))
 
-(#%provide sequence->exp
+
+;; 处理 lambda 表达式
+(define (lambda? exp)
+  (tagged-list? exp 'lambda))
+(define (lambda-parameters exp)
+  (cadr exp))
+(define (lambda-body exp)
+  (cddr exp))
+(define (make-procedure parameters body env)
+  (display "TODO"))
+(define (make-lambda parameters body)
+  (cons 'lambda (cons parameters body)))
+(define (eval-lambda exp env)
+  (make-procedure (lambda-parameters exp)
+                  (lambda-body exp)
+                  env))
+
+(define (install-special-form-package)
+  (put 'exp 'quote text-of-quotation)
+  (put 'exp 'if eval-if)
+  (put 'exp 'assignment eval-assignment)
+  (put 'exp 'definition eval-definition)
+  (put 'exp 'lambda eval-lambda)
+  (put 'exp 'begin eval-beigin))
+
+(#%provide install-special-form-package
+           sequence->exp
            make-if
+           make-lambda
            text-of-quotation
            lambda-parameters
            lambda-body
-           begin-actions
-           )
+           begin-actions)
