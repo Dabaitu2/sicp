@@ -1,6 +1,7 @@
 #lang sicp
 
-;; 处理对过程的应用 (即 (add 1 2) 之类的表达式, 有可能参数也是表达式)
+;; 处理对过程的"应用"
+;; (即 (add 1 2) 之类的表达式, 有可能参数也是表达式)
 (define (application? exp)
   (pair? exp))
 (define (operator exp)

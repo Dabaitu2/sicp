@@ -1,7 +1,9 @@
 #lang sicp
 
+;; Special Form 不应该使用 eval, 而是自行实现求值逻辑
 (#%require "./utils.rkt")
-(#%require "./evaln.rkt")
+(#%require "./env.rkt")
+(#%require "./procedure.rkt")
 (#%require "../../../common/data/table.rkt")
 
 ;; 判断一个表达式是不是引号表达式其实就是看一个 list 的开头是不是某个特定符号
@@ -20,7 +22,9 @@
 (define (assignment-value exp)
   (caddr exp))
 (define (eval-assignment exp env)
-  (display "TODO"))
+  (set-variable-value! (assignment-variable exp)
+                       (eval (assignment-value exp) env)
+                       env))
 
 ;; 处理定义表达式
 ;; 定义表达式有两种
@@ -38,7 +42,9 @@
       (caddr exp)
       (make-lambda (cdadr exp) (cddr exp))))
 (define (eval-definition exp env)
-  (display "TODO"))
+  (define-variable! (definition-variable exp)
+                    (eval (definition-value exp) env)
+                    env))
 
 ;; 处理 if 表达式
 (define (if? exp)
@@ -53,8 +59,9 @@
 (define (make-if predicate consequent alternative)
   (list 'if predicate consequent alternative))
 (define (eval-if exp env)
-  (display "TODO"))
-
+  (if (true? (eval (if-predicate exp) env))
+      (eval (if-consequent exp) env)
+      (eval (if-alternative exp) env)))
 
 ;; 处理 begin 表达式
 (define (begin? exp)
@@ -84,7 +91,6 @@
 (define (make-begin seq)
   (cons 'beigin seq))
 
-
 ;; 处理 lambda 表达式
 (define (lambda? exp)
   (tagged-list? exp 'lambda))
@@ -92,8 +98,6 @@
   (cadr exp))
 (define (lambda-body exp)
   (cddr exp))
-(define (make-procedure parameters body env)
-  (display "TODO"))
 (define (make-lambda parameters body)
   (cons 'lambda (cons parameters body)))
 (define (eval-lambda exp env)
