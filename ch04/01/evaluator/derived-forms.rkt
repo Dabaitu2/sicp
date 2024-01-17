@@ -7,6 +7,7 @@
 
 ;; 派生表达式 Derived Expression
 ;; 基于其他特殊形式的表达式定义出来的特殊形式，不用直接去实现
+;; 它可能使用 eval
 ;; 例如 cond 就可以看成嵌套执行 if
 
 (define (cond? exp)
@@ -58,15 +59,15 @@
   (eval (cond->if exp env) env))
 
 (define (eval-and exps env)
-  (if (no-exps exps) true)
+  (if (no-exps exps) 'true)
   (make-if (first-exp exps)
            (eval-and (rest-exps exps) env)
-           false))
+           'false))
 
 (define (eval-or exps env)
-  (if (no-exps exps) false)
+  (if (no-exps exps) 'false)
   (make-if (first-exp exps)
-           true
+           'true
            (eval-or (rest-exps exps) env)))
 
 (define (let? exp)
@@ -97,6 +98,8 @@
 (define (let-body clause)
   (cdr clause))
 
+;; let->组合式
+;; combination 就是 (list procedure parameters)
 (define (let->combination exp)
   ;; 处理 命名 let
   (if (let-named-clause? exp)
@@ -136,11 +139,34 @@
 (define (eval-let* exp env)
   (eval (let*->nested-lets exp) env))
 
+(define (while? exp)
+  (tagged-list? exp 'while))
+(define (make-while predicate body)
+  (cons 'while (cons predicate body)))
+(define (while-clauses exp)
+  (cdr exp))
+(define (while-predicate clause)
+  (car clause))
+(define (while-body clause)
+  (cdr clause))
+(define (while->combination exp)
+  (let ([predicate (while-predicate exp)]
+        [body (while-body exp)])
+    (make-if
+     predicate
+     ;; 这里的 body 是一个 list，而 if 接受的实际上是单个表达式，所以需要用 begin 包装一下
+     ;; 这里不用 apply，是因为 if 的 alternative / consequence 求值是运行时，不是编译时，所以这里就是一个表达式
+     (sequence->exp (list body exp))
+     'done)))
+(define (eval-while exp env)
+  (eval (while->combination exp) env))
+
 (define (install-derived-form-package)
   (put 'exp 'cond eval-cond)
   (put 'exp 'and eval-and)
   (put 'exp 'or eval-or)
   (put 'exp 'let eval-let)
-  (put 'exp 'let* eval-let*))
+  (put 'exp 'let* eval-let*)
+  (put 'exp 'while eval-while))
 
 (#%provide install-derived-form-package)

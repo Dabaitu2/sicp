@@ -2,8 +2,12 @@
 
 (#%require "../../../common/data/table.rkt")
 
-(#%require "./primitives.rkt")
 (#%require "./utils.rkt")
+(#%require "./env.rkt")
+(#%require "./procedure.rkt")
+(#%require "./primitives.rkt")
+
+(#%require "./special-forms.rkt")
 (#%require "./application.rkt")
 
 ;; 数据导向的 eval
@@ -24,16 +28,6 @@
 (define (primitive-procedure? procedure)
   (display "TODO"))
 (define (apply-primitive-procedure procedure arguments)
-  (display "TODO"))
-(define (compound-procedure? procedure)
-  (display "TODO"))
-(define (procedure-body procedure)
-  (display "TODO"))
-(define (procedure-environment procedure)
-  (display "TODO"))
-(define (extend-environment parameters arguments env)
-  (display "TODO"))
-(define (procedure-parameters procedure)
   (display "TODO"))
 
 (define (apply procedure arguments)
