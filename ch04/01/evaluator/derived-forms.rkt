@@ -1,9 +1,9 @@
 #lang sicp
 
 (#%require "./utils.rkt")
+(#%require "./sequence.rkt")
 (#%require "./evaln.rkt")
 (#%require "./special-forms.rkt")
-(#%require "../../../common/data/table.rkt")
 
 ;; 派生表达式 Derived Expression
 ;; 基于其他特殊形式的表达式定义出来的特殊形式，不用直接去实现
@@ -162,11 +162,11 @@
   (eval (while->combination exp) env))
 
 (define (install-derived-form-package)
-  (put 'exp 'cond eval-cond)
-  (put 'exp 'and eval-and)
-  (put 'exp 'or eval-or)
-  (put 'exp 'let eval-let)
-  (put 'exp 'let* eval-let*)
-  (put 'exp 'while eval-while))
+  (put eval-cond 'exp 'cond)
+  (put eval-and 'exp 'and)
+  (put eval-or 'exp 'or)
+  (put eval-let 'exp 'let)
+  (put eval-let* 'exp 'let*)
+  (put eval-while 'exp 'while))
 
 (#%provide install-derived-form-package)

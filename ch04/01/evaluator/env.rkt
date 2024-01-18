@@ -1,9 +1,6 @@
 #lang sicp
 
 (#%require "../evaluator/utils.rkt")
-(#%require
- "../../../common/data/conventional-interface.rkt")
-
 ;; rewrite env operations
 
 (define (enclosing-environment env)
@@ -16,8 +13,10 @@
 ;; we let `extend-environment` to check this
 (define (make-frame vars vals)
   (map cons vars vals))
-(define (add-binding-to-frame! var val frame)
-  (cons (cons var val) frame))
+(define (add-binding-to-frame! var val frame env)
+  (if (null? frame)
+      (set-car! env (list (cons var val)))
+      (set-cdr! frame (cons (cons var val) (cdr frame)))))
 
 ;; create a new environment with a new frame in which
 ;; all the variables are bound to their values
@@ -38,8 +37,8 @@
    var
    env
    (lambda (ret) (set-cdr! ret val))
-   (lambda (var _env frame)
-     (add-binding-to-frame! var val frame))))
+   (lambda (var env frame)
+     (add-binding-to-frame! var val frame env))))
 
 (define (env-loop env var proc)
   (if (eq? env the-empty-enviroment)
@@ -60,4 +59,6 @@
 (#%provide lookup-variable-value
            extend-environment
            define-variable!
-           set-variable-value!)
+           set-variable-value!
+           look-binding-in-frame
+           the-empty-enviroment)

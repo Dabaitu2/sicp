@@ -15,19 +15,9 @@
 (define (rest-operands ops)
   (cdr ops))
 
-;; 用于求解过程应用 Procedure Application 的参数表
-;; 以 combinations 的运算对象 operands 为参数，递归的求值并返回这些值的 list
-;; (operand exp) -> exps
-(define (list-of-values exps env)
-  (if (no-operands? exps)
-      '()
-      (cons (eval (first-operand exps) env)
-            (list-of-values (rest-operands exps) env))))
-
 (#%provide operator
            operands
            no-operands?
            first-operand
            rest-operands
-           application?
-           list-of-values)
+           application?)
