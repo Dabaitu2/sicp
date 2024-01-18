@@ -13,7 +13,7 @@
 ;; 所有的东西其实都可以看作是 pair (cons) 构成的, 而不像其他语言那样要针对不同的语法结构写复杂的 parser
 (define (quoted? exp)
   (tagged-list? exp 'quote))
-(define (text-of-quotation exp)
+(define (text-of-quotation exp env)
   (cadr exp))
 
 ;; 处理赋值表达式
@@ -38,7 +38,8 @@
 ;; 如果 cadr 是 symbol 意味着是一般变量定义
 ;; 否则说明是过程定义，需要再深入一层拿变量名
 (define (definition-variable exp)
-  (if (symbol? (cadr exp)) (cadr exp) (caddr exp)))
+  (display exp)
+  (if (symbol? (cadr exp)) (cadr exp) (caadr exp)))
 (define (definition-value exp)
   (if (symbol? (cadr exp))
       (caddr exp)
