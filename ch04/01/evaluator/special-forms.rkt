@@ -4,7 +4,9 @@
 (#%require "./utils.rkt")
 (#%require "./env.rkt")
 (#%require "./procedure.rkt")
-(#%require "../../../common/data/table.rkt")
+(#%require "./sequence.rkt")
+(#%require "./predicate.rkt")
+(#%require "./evaln.rkt")
 
 ;; 判断一个表达式是不是引号表达式其实就是看一个 list 的开头是不是某个特定符号
 ;; 这也是 lisp 比较优雅的地方，语法结构非常简单
@@ -105,13 +107,30 @@
                   (lambda-body exp)
                   env))
 
+;; 处理 unbound 特殊形式
+(define (unbound? exp)
+  (tagged-list? exp 'unbound))
+(define (make-unbound! var)
+  (list 'unbound var))
+(define (unbound-var exp)
+  (cadr exp))
+(define (eval-unbound! exp env)
+  (look-binding-in-frame
+   (unbound-var exp)
+   env
+   (lambda (ret) ((set-car! ret '()) (set-cdr! ret '())))
+   ;; 不抛错，静默处理
+   (lambda (_var _env _frame) '())))
+
 (define (install-special-form-package)
-  (put 'exp 'quote text-of-quotation)
-  (put 'exp 'if eval-if)
-  (put 'exp 'assignment eval-assignment)
-  (put 'exp 'definition eval-definition)
-  (put 'exp 'lambda eval-lambda)
-  (put 'exp 'begin eval-beigin))
+  (put text-of-quotation 'exp 'quote)
+  (put eval-if 'exp 'if)
+  (put eval-assignment 'exp 'assignment)
+  (put eval-definition 'exp 'define)
+  (put eval-lambda 'exp 'lambda)
+  (put eval-beigin 'exp 'begin)
+  (put eval-lambda 'exp 'lambda)
+  (put eval-unbound! 'exp 'unbound))
 
 (#%provide install-special-form-package
            sequence->exp

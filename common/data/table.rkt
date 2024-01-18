@@ -6,9 +6,9 @@
 #| (put 1 'a 'b 'c) |#
 #| (put 2 'a 'b 'd) |#
 #| (put 3 'a 'b) |#
-;; 
 ;;
-#| (get 'a) => #f        |# 
+;;
+#| (get 'a) => #f        |#
 #| (get 'a 'b) => 3      |#
 #| (get 'a 'b 'c) => 2   |#
 #| (get 'a 'b 'd) => 1   |#
@@ -84,15 +84,18 @@
       (define (look-iter table keys)
         (let ([current-key (car keys)]
               [remain-keys (cdr keys)])
-          (let ([record (assoc current-key
-                               (record-subtable table))])
-            (if record
-                (if (null? remain-keys)
-                    (if (null? (record-value record))
-                        #f
-                        (record-value record))
-                    (look-iter record remain-keys))
-                #f))))
+          (if (not (symbol? current-key))
+              #f
+              (let ([record (assoc current-key
+                                   (record-subtable
+                                    table))])
+                (if record
+                    (if (null? remain-keys)
+                        (if (null? (record-value record))
+                            #f
+                            (record-value record))
+                        (look-iter record remain-keys))
+                    #f)))))
       (look-iter local-table keys))
 
     (define (insert! value . keys)
@@ -138,6 +141,11 @@
       (cond
         [(eq? m 'lookup-proc) lookup]
         [(eq? m 'insert-proc!) insert!]
+        [(eq? m 'check-proc)
+         (lambda ()
+           (newline)
+           (display local-table)
+           (newline))]
         [else (error "Unknown operation -- TABLE" m)]))
     dispatch))
 
@@ -154,6 +162,5 @@
   (make-table '*table* key-eq? key-gt? key-lt?))
 (define get (operational-table 'lookup-proc))
 (define put (operational-table 'insert-proc!))
-
 
 (#%provide operational-table get put make-table)
