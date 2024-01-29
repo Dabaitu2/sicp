@@ -27,6 +27,7 @@
         (list 'null? null?)
         (list 'remainder remainder)
         (list 'quotient quotient)
+        ;; (list 'imap map)
         (list '+ +)
         (list '- -)
         (list '* *)
