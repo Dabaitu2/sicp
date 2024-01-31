@@ -64,25 +64,8 @@
       (if (null? bindings) body (make-let bindings body)))))
 
 
-;; output:
-;; 
-;; ;;; M-Eval input:
-;;; (define (f x)
-;;;   (define (even? n)
-;;;     (if (= n 0)
-;;;         true
-;;;         (odd? (- n 1))))
-;;;   (define (odd? n)
-;;;     (if (= n 0)
-;;;         false)
-;;;     (even? (- n 1)))
-;;;   (odd? x) 
-;;;   )
-;;; ;;; M-Eval value
-;;; #<void>
-;;; 
-;;; ;;; M-Eval input:
-;;; f
-;;; 
-;;; ;;; M-Eval value
-;;; (compund-procedure (x) (let ((even? '*unassigned) (odd? '*unassigned)) (set even? (lambda (n) (if (= n 0) true (odd? (- n 1))))) (set odd? (lambda (n) (if (= n 0) false) (even? (- n 1)))) (odd? x)) <procedure-env>)
+
+
+;; c.
+;; put it inside make-procedure
+;; to reduce ineffient invokaction
