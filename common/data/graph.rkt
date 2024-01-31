@@ -1,40 +1,5 @@
 #lang racket
 
-;; 考虑如下表达式
-;; (let ([a 1])
-;;   (define (f x)
-;;     (define b (+ a x))
-;;     (define a 5)
-;;     (+ a b))
-;;   (f 10))
-
-;; 这个表达式按照我们正文的解释方法无法正常执行
-;; 因为 b 的 set 操作也先于 a
-;; 导致 a 还没有赋值就被使用
-
-;; 为了使得 define 的顺序不再重要，我们可以如下设计:
-;; 对 define 的顺序, 在 scan 时进行拓扑排序，保证没有依赖的变量先 define
-;; 例如对于上面的例子，我们分析出 a 不依赖任何变量，而 b 依赖 a
-;; 因此可以构建 DAG a->b, 再按照拓扑排序将结果输出，针对每一个结果完成赋值
-;; 从而保证没有变量会在依赖变量未赋值前被赋值
-;; 1. 如果 (define var primitive) var 创建一个 node
-;; 2. 如果 (define var other var2) 创建一个 edge var -> var2
-;; 3. 如果 (define var (expression))
-;;   3.1 如果是 procedure => 创建 edge 将 var 指向 procedure 的实际参数
-;;   3.2 如果不是 procedure => 解析表达式，递归的获取 operands, 直到最后读取到原始值或者某个变量
-;;     例如 (define x (+ a (- b (add d e))))
-;;     -> 获取 a，解析 (- b (add d e)) 
-;;     -> 获取 b, 解析 (add d e) 
-;;     -> 获取 d, e
-;;     最终建立 x->a, x->b, x->d, x->e, b->a, d->a, e->a 的 边，加入 DAG
-;;   扫描完成后，通过拓扑排序输出依赖序列，再将赋值按照依赖序列创建到 (let body) 中
-
-
-
-;; 这个实现针对我们要学习的东西来说过分复杂了，所以就略过～
-;; 下面是 拓扑排序 的 racket 实现
-
-
 ;; constructor
 (define (make-graph)
   '())
