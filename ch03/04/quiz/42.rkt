@@ -1,6 +1,5 @@
 #lang sicp
-(#%require
- "../01-nature-of-time-in-concurrent-systems/serializer.rkt")
+(#%require "../01-nature-of-time-in-concurrent-systems/serializer.rkt")
 
 ;; I just feel like it's safe to do so
 ;; cause according to the definition, all the others procedure have to wait until running procdure finishing

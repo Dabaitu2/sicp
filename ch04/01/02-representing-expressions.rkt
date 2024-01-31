@@ -50,7 +50,7 @@
 (define (definition-value exp)
   (if (symbol? (cadr exp))
       (caddr exp)
-      (make-lambda (cdadr exp) (cddr exp))))
+      (mke-lambda (cdadr exp) (cddr exp))))
 
 ;; 处理 lambda 表达式
 (define (lambda? exp)

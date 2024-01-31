@@ -12,7 +12,7 @@
     (if (= n 0)
         false)
     (even? (- n 1)))
-  (display "other part")
+  (odd? x) 
   )
 
 
