@@ -51,7 +51,16 @@
          (env-loop (enclosing-environment env) var proc)))))
 
 (define (lookup-variable-value var env)
-  (env-loop env var (lambda (ret) (cdr ret))))
+  (env-loop
+   env
+   var
+   (lambda (ret)
+     (let ([val (cdr ret)])
+       (if (eq? val '*unassigned*)
+           (error
+            "Unassigned Variable -- LOOKUP-VARIABLE-VALUE"
+            (car ret))
+           val)))))
 
 (define (set-variable-value! var val env)
   (env-loop env var (lambda (ret) (set-cdr! ret val))))

@@ -1,6 +1,5 @@
 #lang sicp
-(#%require
- "../01-nature-of-time-in-concurrent-systems/serializer.rkt")
+(#%require "../01-nature-of-time-in-concurrent-systems/serializer.rkt")
 
 (define x 10)
 (define s (make-serializer))

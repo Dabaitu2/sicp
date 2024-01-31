@@ -14,6 +14,7 @@
     ;; 全局变量 'true 对应解释器中的真值
     (define-variable! 'true true initial-env)
     (define-variable! 'false false initial-env)
+    (define-variable! 'nil '() initial-env)
     initial-env))
 (define the-global-environment (setup-environment))
 
