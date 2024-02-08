@@ -1,15 +1,14 @@
 #lang sicp
 
-(#%require "../evaluator/utils.rkt")
-(#%require "../evaluator/special-forms.rkt")
+(#%require "../utils.rkt")
+(#%require "../evaln.rkt")
+(#%require "../special-forms/begin.rkt")
+(#%require "../special-forms/if.rkt")
 
-;; extend cond evaluation, to make it support belowing form:
-;; (<test> => <recipient>)
-;; if <test> is true, then <recipient> as a procedure will be used
-;; use recipient to apply test's value
-;;
-;; (cond ((assoc 'b '((a 1) (b 2))) => cadr)  ;; return 2
-;;       (else false))
+;; 派生表达式 Derived Expression
+;; 基于其他特殊形式的表达式定义出来的特殊形式，不用直接去实现
+;; 它可能使用 eval
+;; 例如 cond 就可以看成嵌套执行 if
 
 (define (cond? exp)
   (tagged-list? exp 'cond))
@@ -50,3 +49,8 @@
            (make-if (cond-predicate first)
                     (sequence->exp (cond-actions first))
                     (expand-clauses rest))]))))
+
+(define (analyze-cond exp)
+  (lambda (env) (analyze (cond->if exp) env)))
+
+(#%provide analyze-cond)

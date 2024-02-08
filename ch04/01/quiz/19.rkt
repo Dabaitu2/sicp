@@ -1,5 +1,12 @@
 #lang racket
 
+(define (fold-left op initial sequence)
+  (define (iter result rest)
+    (if (null? rest)
+        result
+        (iter (op result (car rest)) (cdr rest))))
+  (iter initial sequence))
+
 ;; 考虑如下表达式
 ;; (let ([a 1])
 ;;   (define (f x)
@@ -23,18 +30,18 @@
 ;;   3.1 如果是 procedure => 创建 edge 将 var 指向 procedure 的实际参数
 ;;   3.2 如果不是 procedure => 解析表达式，递归的获取 operands, 直到最后读取到原始值或者某个变量
 ;;     例如 (define x (+ a (- b (add d e))))
-;;     -> 获取 a，解析 (- b (add d e)) 
-;;     -> 获取 b, 解析 (add d e) 
+;;     -> 获取 a，解析 (- b (add d e))
+;;     -> 获取 b, 解析 (add d e)
 ;;     -> 获取 d, e
 ;;     最终建立 x->a, x->b, x->d, x->e, b->a, d->a, e->a 的 边，加入 DAG
 ;;   扫描完成后，通过拓扑排序输出依赖序列，再将赋值按照依赖序列创建到 (let body) 中
 
-
-
 ;; 这个实现针对我们要学习的东西来说过分复杂了，所以就略过～
+
+
+
+;; P.S
 ;; 下面是 拓扑排序 的 racket 实现
-
-
 ;; constructor
 (define (make-graph)
   '())
@@ -136,11 +143,28 @@
                                       (cons node sorted))))
          zero-in-degree-nodes))))
 
+;; 函数式解法
+(define nodes '(a b c))
+(define edges '((b c) (b a) (c a)))
+(define (run g)
+  (topological-sort-helper
+   (fold-left
+    (lambda (graph edge) (apply add-edge (cons graph edge)))
+    (fold-left (lambda (graph node) (add-node graph node))
+               g
+               nodes)
+    edges)
+   '()))
+
+(run empty-graph)
+(newline)
+
+;; 过程式解法
 (let* ([g0 empty-graph]
        [g1 (add-node g0 'a)]
        [g2 (add-node g1 'b)]
        [g3 (add-node g2 'c)]
-       [g4 (add-edge g3 'a 'b)]
-       [g5 (add-edge g4 'a 'c)]
-       [g6 (add-edge g5 'b 'c)])
+       [g4 (add-edge g3 'b 'c)]
+       [g5 (add-edge g4 'b 'a)]
+       [g6 (add-edge g5 'c 'a)])
   (topological-sort-helper g6 '()))

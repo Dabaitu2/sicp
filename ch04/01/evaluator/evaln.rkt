@@ -34,15 +34,6 @@
     [(get 'exp (car exp)) ((get 'exp (car exp)) exp env)]
     ;; application 不是 (cons tag xxx) 的特殊表达式, 需要单独处理
     [(application? exp)
-     (display "exp: ")
-     (display exp)
-     (newline)
-     (display "operator: ")
-     (display (operator exp))
-     (newline)
-     (display "operands ")
-     (display (operands exp))
-     (newline)
      (apply (eval (operator exp) env)
             (list-of-values (operands exp) env))]
     [else (error "Unknown expression type: EVAL" exp)]))

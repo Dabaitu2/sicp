@@ -43,13 +43,23 @@
   (cons 'let (cons bindings body)))
 
 (define (let->combination exp)
+  ;; 处理 命名 let
   (if (let-named-clause? exp)
-      (let ([var (let-named-name exp)]
-            [defs (let-named-clause exp)])
-        ;; 个人觉得这样比直接构造一个 define 要优雅一点
-        (eval (make-let (list var defs) (let-body defs))))
+      (let ([name (let-named-name exp)]
+            [clause (let-named-clause exp)])
+        (let ([bindings (let-bindings clause)]
+              [body (let-body clause)])
+          (let ([vars (let-vars bindings)]
+                [vals (let-values bindings
+                        )])
+            (let ([proc (make-lambda vars body)])
+              (cons (make-lambda
+                     '()
+                     (list (cons 'define (list name proc))
+                           (cons name vals)))
+                    '())))))
       (let ([bindings (let-bindings exp)])
-        (list (make-lambda (let-vars bindings)
+        (cons (make-lambda (let-vars bindings)
                            (let-body exp))
               (let-values bindings
                 )))))

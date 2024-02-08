@@ -8,8 +8,6 @@
   (tagged-list? exp 'begin))
 (define (begin-actions exp)
   (cadr exp))
-(define (eval-begin exp env)
-  (eval-sequence (begin-actions exp) env))
 
 ;; 将一个 sequence 变化为表达式
 ;; 如果只有一个表达式，则返回那个表达式
@@ -22,7 +20,14 @@
     [(null? seq) seq]
     [(last-exp? seq) (first-exp seq)]
     [else (make-begin seq)]))
-(define (make-begin seq)
-  (cons 'begin seq))
 
-(#%provide begin? begin-actions eval-begin sequence->exp)
+(define (make-begin seq)
+  (cons 'beigin seq))
+
+(define (analyze-begin exp)
+  (analyze-sequence (begin-actions exp)))
+
+(#%provide begin?
+           begin-actions
+           analyze-begin
+           sequence->exp)
