@@ -50,7 +50,7 @@
                     (sequence->exp (cond-actions first))
                     (expand-clauses rest))]))))
 
-(define (analyze-cond exp)
-  (lambda (env) ((analyze (cond->if exp)) env)))
+(define (eval-cond exp env)
+  (eval (cond->if exp) env))
 
-(#%provide analyze-cond)
+(#%provide eval-cond)

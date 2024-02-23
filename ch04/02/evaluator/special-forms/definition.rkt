@@ -13,6 +13,7 @@
 ;; 否则说明是过程定义，需要再深入一层拿变量名
 (define (definition-variable exp)
   (if (symbol? (cadr exp)) (cadr exp) (caadr exp)))
+
 (define (definition-value exp)
   (if (symbol? (cadr exp))
       (caddr exp)
