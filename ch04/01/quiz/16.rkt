@@ -46,13 +46,13 @@
             (if (definition? cur)
                 ;; 构造变量提升
                 (let ([def-var
-                        (list (definition-variable cur)
-                              ''*unassigned)]
+                       (list (definition-variable cur)
+                             ''*unassigned)]
                       ;; 构造变量赋值用于占位
                       [def-set
-                        (list 'set
-                              (definition-variable cur)
-                              (definition-value cur))])
+                       (list 'set
+                             (definition-variable cur)
+                             (definition-value cur))])
                   ;; 这里没有把顺序倒回去，因为对于 binding / set! 定义而言这应该不重要
                   (list (cons def-var (car acc))
                         (cons def-set (cadr acc))))
@@ -62,9 +62,6 @@
           proc-body)])
     (let ([bindings (car result)] [body (cadr result)])
       (if (null? bindings) body (make-let bindings body)))))
-
-
-
 
 ;; c.
 ;; put it inside make-procedure

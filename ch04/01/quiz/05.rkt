@@ -25,10 +25,10 @@
   (cdr clause))
 (define (cond-=>recipient clause)
   (caddr clause))
-(define (cond->if exp env)
-  (expand-clauses (cond-clauses exp) env))
+(define (cond->if exp)
+  (expand-clauses (cond-clauses exp)))
 
-(define (expand-clauses clauses env)
+(define (expand-clauses clauses)
   (if (null? clauses)
       `false
       (let ([first (car clauses)] [rest (cdr clauses)])
@@ -43,12 +43,8 @@
            (let ([predicate (cond-predicate first)]
                  [recipient (cond-=>recipient first)])
              (make-if predicate
-                      ;; 此时的 recipient 还是一个没有求值完的表达式变量
-                      ;; 要在环境中找到对应的值, 才能去交给 apply
-                      ;; 这里要求值，而不是只返回表达式, 所以使用 apply 而不是 list 拼成 application
-                      (apply (eval recipient env)
-                             ;; 同样的 predicate 也只是一个表达式，没有求值，需要求出值了再送给 apply
-                             (list (eval predicate env)))
+                      ;; 将求值操作转化为 过程调用, 这就是我们要的结果，这最终也会被求值
+                      (list recipient predicate)
                       (expand-clauses rest)))]
           [else
            (make-if (cond-predicate first)

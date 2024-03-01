@@ -1,0 +1,21 @@
+#lang sicp
+(#%require "../utils.rkt")
+(#%require "./quoted.rkt")
+(#%require "./eval-definition.rkt")
+(#%require "./eval-lambda.rkt")
+(#%require "./begin.rkt")
+(#%require "./eval-if.rkt")
+(#%require "./unbound.rkt")
+(#%require "./eval-assignment.rkt")
+
+(define (install-special-form-package)
+  (put analyze-quoted 'exp 'quote)
+  (put analyze-assignment 'exp 'set!)
+  (put analyze-definition 'exp 'define)
+  (put analyze-if 'exp 'if)
+  (put analyze-lambda 'exp 'lambda)
+  (put analyze-begin 'exp 'begin)
+  (put analyze-unbound! 'exp 'unbound)
+  "special-form loaded")
+
+(#%provide install-special-form-package)
