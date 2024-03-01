@@ -7,7 +7,7 @@
 (define (begin? exp)
   (tagged-list? exp 'begin))
 (define (begin-actions exp)
-  (cadr exp))
+  (cdr exp))
 
 ;; 将一个 sequence 变化为表达式
 ;; 如果只有一个表达式，则返回那个表达式

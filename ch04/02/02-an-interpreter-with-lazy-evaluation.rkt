@@ -1,16 +1,16 @@
 #lang sicp
 
-;; 本章节将复合过程改编为 Normal Order 也就是非严格的 
+;; 本章节将复合过程改编为 Normal Order 也就是非严格的
 ;; 而对于基本过程则保持 Application Order 也就是说严格的
 
 ;; 基本策略为: 在 Apply 一个 Procedure 时，解释器会判断出那些参数需要 Lazy-Evaluation
 ;; 对于需要 Lazy 的参数，均不求值，而是将其包装为一个 Thunk
-;; Thunk 包含这个参数对应的表达式，以及求值这个 Procedure Application 时所处的 Env 
+;; Thunk 包含这个参数对应的表达式，以及求值这个 Procedure Application 时所处的 Env
 
 ;; 同样，我们需要实现一个类似于第三章提到的 Force 操作来实现求值一个 Thunk
 ;; 调用 Force 的时机通常是我们需要获得这个值时才进行，这包括：
 ;; 1. 应用基本过程需要这个值
-;; 2. 它将作为条件表达式的 predicate 谓词时 
+;; 2. 它将作为条件表达式的 predicate 谓词时
 ;; 3. 将它作为一个过程 procedure 去 Apply 时
 
 
@@ -37,7 +37,7 @@
     [else (error "Unknown expression type: EVAL" exp)]))
 
 
-;; 对于基本过程，参数需要立即求值 
+;; 对于基本过程，参数需要立即求值
 (define (list-of-arg-values exps env)
   (if (no-operands? exps)
       '()
@@ -123,6 +123,10 @@
 
 
 
+(define (unmemorized-force-it obj)
+  (if (thunk? obj)
+      (actual-value (thunk-exp obj) (thunk-env obj))
+      obj))
 
 
 

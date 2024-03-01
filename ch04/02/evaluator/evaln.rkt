@@ -33,6 +33,7 @@
 (define (actual-value exp env)
   ;; 将 eval 出来的结果强制求值
   (force-it (eval exp env)))
+;; (unmemorized-force-it (eval exp env)))
 
 (define (force-it obj)
   (cond
@@ -46,6 +47,12 @@
     [(evaluated-thunk? obj) (thunk-value obj)]
     [else obj]))
 
+
+(define (unmemorized-force-it obj)
+  (if (thunk? obj)
+      (actual-value (thunk-exp obj) (thunk-env obj))
+      obj))
+
 ;; ============= eval 实现 =============
 
 (define (eval-sequence exps env)
@@ -58,11 +65,26 @@
 ;; 用于求解过程应用 Procedure Application 的参数表
 ;; 以 combinations 的运算对象 operands 为参数，递归的求值并返回这些值的 list
 ;; (operand exp) -> exps
-(define (list-of-values exps env)
+;; (define (list-of-values exps env)
+;;   (if (no-operands? exps)
+;;       '()
+;;       (cons (eval (first-operand exps) env)
+;;             (list-of-values (rest-operands exps) env))))
+
+;; 针对 primitive 求值
+(define (list-of-arg-values exps env)
   (if (no-operands? exps)
       '()
-      (cons (eval (first-operand exps) env)
-            (list-of-values (rest-operands exps) env))))
+      (cons (actual-value (first-operand exps) env)
+            (list-of-arg-values (rest-operands exps) env))))
+
+;; 针对 delay， 转化为 thunk
+(define (list-of-delayed-args exps env)
+  (if (no-operands? exps)
+      '()
+      (cons (delay-it (first-operand exps) env)
+            (list-of-delayed-args (rest-operands exps)
+                                  env))))
 
 ;; 数据导向的 eval
 ;; 特殊 form 都是一个 (cons tag exp)
@@ -84,19 +106,6 @@
             ;; 增加第三个参数 env
             env)]
     [else (error "Unknown expression type: EVAL" exp)]))
-
-(define (list-of-arg-values exps env)
-  (if (no-operands? exps)
-      '()
-      (cons (actual-value (first-operand exps) env)
-            (list-of-arg-values (rest-operands exps) env))))
-
-(define (list-of-delayed-args exps env)
-  (if (no-operands? exps)
-      '()
-      (cons (delay-it (first-operand exps) env)
-            (list-of-delayed-args (rest-operands exps)
-                                  env))))
 
 ;; 增加 env 参数
 (define (apply procedure arguments env)

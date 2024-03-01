@@ -15,8 +15,10 @@
       (make-if (first-exp exps)
                (expand-and (rest-exps exps))
                'false)))
-(define (analyze-and exp)
+(define (and->if exp)
   (expand-and (and-clauses exp)))
+(define (eval-and exp env)
+  (eval (and->if exp) env))
 
 (define (or? exp)
   (tagged-list? exp 'or))
@@ -30,8 +32,7 @@
                (expand-or (rest-exps exps)))))
 (define (or->if exp)
   (expand-or (or-clauses exp)))
+(define (eval-or exp env)
+  (eval (or->if exp) env))
 
-(define (analyze-or exp)
-  (analyze (or->if exp)))
-
-(#%provide analyze-and analyze-or)
+(#%provide eval-and eval-or)

@@ -1,6 +1,5 @@
 #lang sicp
-
-(#%require "./env.rkt")
+(#%require "./utils.rkt")
 
 ;; 实际上，要想做到这一步，本身还需要很多努力
 ;; 我们需要用类似正则的方案去判断什么是字符串，什么是数字
@@ -18,13 +17,4 @@
 (define (variable? exp)
   (symbol? exp))
 
-(define (analyze-self-evaluating exp)
-  (lambda (env) exp))
-
-(define (analyze-variable exp)
-  (lambda (env) (lookup-variable-value exp env)))
-
-(#%provide self-evaluating?
-           variable?
-           analyze-self-evaluating
-           analyze-variable)
+(#%provide self-evaluating? variable?)

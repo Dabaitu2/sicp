@@ -11,7 +11,7 @@
          (fold-right
           (lambda (cur acc)
             (if (definition? cur)
-                ;; 构造变量提升
+                ;; 构造变量提升kk
                 (let ([def-var
                         (list (definition-variable cur)
                               ;; 变量会被 evaluated 一次，因此要多加一层 quote

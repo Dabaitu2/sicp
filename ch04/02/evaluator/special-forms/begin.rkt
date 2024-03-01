@@ -7,7 +7,7 @@
 (define (begin? exp)
   (tagged-list? exp 'begin))
 (define (begin-actions exp)
-  (cadr exp))
+  (cdr exp))
 (define (eval-begin exp env)
   (eval-sequence (begin-actions exp) env))
 

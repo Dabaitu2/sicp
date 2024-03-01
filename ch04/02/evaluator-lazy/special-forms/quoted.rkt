@@ -6,12 +6,7 @@
 ;; 所有的东西其实都可以看作是 pair (cons) 构成的, 而不像其他语言那样要针对不同的语法结构写复杂的 parser
 (define (quoted? exp)
   (tagged-list? exp 'quote))
-
-(define (text-of-quotation exp)
+(define (text-of-quotation exp env)
   (cadr exp))
 
-(define (analyze-quoted exp)
-  (let ([qval (text-of-quotation exp)])
-    (lambda (env) qval)))
-
-(#%provide quoted? text-of-quotation analyze-quoted)
+(#%provide quoted? text-of-quotation)

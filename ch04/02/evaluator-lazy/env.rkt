@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../evaluator-analyzer/utils.rkt")
+(#%require "../evaluator/utils.rkt")
 ;; rewrite env operations
 
 (define (enclosing-environment env)

@@ -67,6 +67,9 @@
         (list '* *)
         (list '/ /)
         (list '= =)
+        (list 'list list)
+        (list 'newline newline)
+        (list 'display display)
         ;; and so on..
         ))
 

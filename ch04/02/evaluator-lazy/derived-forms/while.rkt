@@ -25,8 +25,7 @@
      ;; 这里不用 apply，是因为 if 的 alternative / consequence 求值是运行时，不是编译时，所以这里就是一个表达式
      (sequence->exp (list body exp))
      'done)))
+(define (eval-while exp env)
+  (eval (while->combination exp) env))
 
-(define (analyze-while exp)
-  (analyze (while->combination exp)))
-
-(#%provide analyze-while)
+(#%provide eval-while)
