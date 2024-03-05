@@ -11,7 +11,8 @@
 ;; 调用 Force 的时机通常是我们需要获得这个值时才进行，这包括：
 ;; 1. 应用基本过程需要这个值
 ;; 2. 它将作为条件表达式的 predicate 谓词时
-;; 3. 将它作为一个过程 procedure 去 Apply 时
+;; 3. 将它作为一个过程 procedure 去 Apply 时 也就是 (add 1 2) 里的 add 必须要求得实际对应的 body
+
 
 
 ;; 然后，我们选择将这个 thunk 实现为 memorized thunk, 也就是带缓存的，这的选择也和前面第三章所讲的一致
