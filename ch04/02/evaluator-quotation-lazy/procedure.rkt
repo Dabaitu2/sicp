@@ -57,9 +57,9 @@
 ;; 为了支持 lazy 的 list 将 car / cons / cdr 从基本过程剔除
 (define primitive-procedures
   (list
-   ;; (list 'car car)
-   ;;     (list 'cdr cdr)
-   ;;     (list 'cons cons)
+   (list 'underlying-car car)
+   (list 'underlying-cdr cdr)
+   (list 'underlying-cons cons)
    (list 'null? null?)
    (list 'remainder remainder)
    (list 'quotient quotient)

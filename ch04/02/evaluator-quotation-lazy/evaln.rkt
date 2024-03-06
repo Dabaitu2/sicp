@@ -51,7 +51,6 @@
     [(evaluated-thunk? obj) (thunk-value obj)]
     [else obj]))
 
-
 (define (unmemorized-force-it obj)
   (if (thunk? obj)
       (actual-value (thunk-exp obj) (thunk-env obj))
@@ -130,4 +129,4 @@
      "Unknown procedure type -- APPLY"
      procedure]))
 
-(#%provide eval apply eval-sequence actual-value)
+(#%provide eval apply eval-sequence actual-value force-it)
