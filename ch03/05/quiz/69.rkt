@@ -34,7 +34,6 @@
                         (stream-cdr t)
                         (stream-cdr u)))))
 
-(stream-refs 10 (triples integers integers integers))
 
 (define (square x)
   (* x x))
@@ -46,7 +45,12 @@
 
 ;; (stream-refs 10 (phythagorean-numbers))
 
+(display "triples:")
+(newline)
+(stream-refs 10 (triples integers integers integers))
 ;; 这个流求解的速度还是比较慢的..因为需要大量的回溯计算
+(display "phythagorean-numbers:")
+(newline)
 (stream-ref phythagorean-numbers 0)
 (stream-ref phythagorean-numbers 1)
 (stream-ref phythagorean-numbers 2)

@@ -6,3 +6,5 @@ ch04/01/evaluator/special-forms/compiled/drracket/errortrace
 ch04/01/evaluator-analyzer/compiled/drracket/errortrace
 **/compiled/
 
+common/compiled/drracket/errortrace
+common/math/compiled/drracket/errortrace
