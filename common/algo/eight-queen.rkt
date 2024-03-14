@@ -34,7 +34,7 @@
          ;; 对可能的每一种组合形式进行过滤
          (lambda (positions) (safe? k positions))
          ;; 对余下的已经排序过的 k-1 皇后,
-         ;; 将新皇后从 1-board-size 位依次和 list 链接
+         ;; 将新皇后从 1 ~ board-size 位依次和 list 链接
          ;; 然后 flatmap 合并到一起去
          (flatmap (lambda (rest-of-queens)
                     (map (lambda (new-row)

@@ -1,6 +1,6 @@
 #lang sicp
 
-(#%require "../conventional-interface.rkt")
+(#%require "../data/conventional-interface.rkt")
 
 
 ;; 使用 flatmap 完成全排列问题
@@ -31,4 +31,5 @@
                       (permutations (remove x s))))
                s)))
 
-(permutations (list 1 2 3))
+;; (permutations (list 1 2 3))
+(#%provide permutations)

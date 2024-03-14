@@ -84,6 +84,13 @@
       nil
       (cons low (enumerate-interval (+ low 1) high))))
 
+(define (distinct? items)
+  (cond
+    [(null? items) true]
+    [(null? (cdr items)) true]
+    [(member (car items) (cdr items)) false]
+    [else (distinct? (cdr items))]))
+
 (#%provide map
            flatmap
            filter
@@ -94,4 +101,5 @@
            accumulate-n
            enumerate-interval
            reverse
-           deep-reverse)
+           deep-reverse
+           distinct?)
