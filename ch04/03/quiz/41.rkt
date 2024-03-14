@@ -5,7 +5,7 @@
 
 ;; 写出一个常规的 scheme 程序以解决此问题 (multiple-dwelling)
 
-;; 最容易懂的办法：全排列检查
+;; 最容易懂的办法：全排列检查 permutations
 (define (check lst)
   (define baker (car lst))
   (define cooper (cadr lst))
