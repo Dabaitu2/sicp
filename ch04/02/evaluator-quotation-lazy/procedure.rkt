@@ -55,6 +55,7 @@
 
 ;; 注册基本过程
 ;; 为了支持 lazy 的 list 将 car / cons / cdr 从基本过程剔除
+;; 转化为一种通用过程 (类似于标准库?)
 (define primitive-procedures
   (list
    (list 'underlying-car car)

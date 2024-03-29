@@ -9,7 +9,7 @@
 ;; 在 evaluator 中，我们在 define 这个过程时，只是将函数体存了起来
 ;; 在后续我们频繁调用 (factorial x) 时，每调用一次这里面的函数体都需要被重新 eval
 ;; 而 eval 中实际包含着解析语法结构的过程，比如，我们分析 factoral 的 body
-;; 取出其 predicate, consequence 和 alternate 就是在做语法分析
+;; 取出其 predicate, consequence 和 alternate 就是在做语法分析 (也就是调用 if-predicate / ... 这些命令)
 ;; 我们通过 if 去判断当前 factorial 的 body 到底是个什么表达式也是在做语法分析
 
 ;; 我们现在每调用一次就得搞一次
