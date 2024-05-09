@@ -1,0 +1,12 @@
+#lang sicp
+
+;; 1.
+;; (supervisor ?person (Bitdiddle Ben))
+
+
+;; 2
+;; (job ?person (accounting ?work))
+
+;; 3
+;; (address ?person (Slumerville . ?address))
+

@@ -28,5 +28,6 @@
 (half-adder input-1 input-2 sum carry)
 (set-signal! input-1 1)
 (propagate)
+;; 时间流动是由 gate 决定的
 (set-signal! input-2 1)
 (propagate)

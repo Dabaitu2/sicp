@@ -32,12 +32,16 @@
         (list 'quotient quotient)
         (list 'newline newline)
         (list 'display display)
+        (list 'eq? eq?)
+        (list 'even? even?)
         ;; (list 'imap map)
         (list '+ +)
         (list '- -)
         (list '* *)
         (list '/ /)
         (list '= =)
+        (list '> >)
+        (list '< <)
         ;; and so on..
         ))
 

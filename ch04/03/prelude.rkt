@@ -1,12 +1,20 @@
 #lang sicp
+(#%require "../../common/math/num-theory.rkt")
 
 ;; 这里给出的就是一种被称为 non-determistic computing 非确定性计算的描述
 ;; 之所以叫非确定性计算，是因为它没有给出应该如何真正的具体实现求解的方案
 ;; 而是给出了类似对于定义说明的翻译，或者说偏 pseudo 代码的东西
 ;; 本章的目标，就是要通过修改求值器以实现此能力
+(define (require p)
+  (if (not p) (amb)))
+
+(define (an-element-of items)
+  (require (not (null? items)))
+  (amb (car items) (an-element-of (cdr items))))
+
 (define (prime-sum-pair list1 list2)
-  (let ([a (an-elementof list1)] 
-        [b (an-elementof list2)])
+  (let ([a (an-element-of list1)]
+        [b (an-element-of list2)])
     (require (prime? (+ a b)))
     (list a b)))
 

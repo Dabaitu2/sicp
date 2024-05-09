@@ -91,6 +91,10 @@
     [(member (car items) (cdr items)) false]
     [else (distinct? (cdr items))]))
 
+(define (remove item sequence)
+  (filter (lambda (x) (not (eq? x item)))
+          sequence))
+
 (#%provide map
            flatmap
            filter
@@ -102,4 +106,5 @@
            enumerate-interval
            reverse
            deep-reverse
+           remove
            distinct?)

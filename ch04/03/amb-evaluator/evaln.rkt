@@ -1,8 +1,10 @@
 #lang sicp
 
+(#%require "../../../common/data/conventional-interface.rkt")
 (#%require "./utils.rkt")
 (#%require "./env.rkt")
 (#%require "./amb.rkt")
+(#%require "./ramb.rkt")
 (#%require "./procedure.rkt")
 (#%require "./primitives.rkt")
 (#%require "./application.rkt")
@@ -104,6 +106,24 @@
       (cons (ambeval (first-operand exps) env)
             (list-of-values (rest-operands exps) env))))
 
+(define (analyze-ramb exp)
+  (let ([cprocs (map analyze (amb-choices exp))])
+    (lambda (env succeed fail)
+      (define (try-next choices)
+        (if (null? choices)
+            (fail)
+            ;; 随机尝试执行某一个可能值的求值
+            (let* ([choices-len (length choices)]
+                   [next-idx (random choices-len)]
+                   [next-choice (list-ref choices next-idx)]
+                   [rest-choices (remove next-choice
+                                         choices)])
+              (next-choice env
+                           succeed
+                           (lambda ()
+                             (try-next rest-choices))))))
+      (try-next cprocs))))
+
 (define (analyze-amb exp)
   ;; 解析所有 amb 的可能值
   (let ([cprocs (map analyze (amb-choices exp))])
@@ -135,10 +155,12 @@
     [(variable? exp) (analyze-variable exp)]
     ;; amb 是比特殊语法更特殊的表达式，先放在外面
     [(amb? exp) (analyze-amb exp)]
+    [(ramb? exp) (analyze-ramb exp)]
     [(get 'exp (car exp)) ((get 'exp (car exp)) exp)]
     [(application? exp) (analyze-application exp)]
     [else
      (error "Unknown expression type -- ANALYZE" exp)]))
+
 
 (#%provide ambeval
            analyze-application

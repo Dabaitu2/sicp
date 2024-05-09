@@ -5,7 +5,7 @@ Until Now, we have seen what problems will occur if we introduce Assignment.
 1. Complexity with Time concept: the behavior of a program is no longer just determined by input, while what the status itself currently is still matters
 2. The difficulty of understanding programs
 3. Parallel programming issues: data inconsistent & deadlock
-4. Referentially transparent was Broken: 在没有赋值的情况下，一个表达式可以被它所代表的结果替换掉而不改变程序的行为。但是在有赋值操作的情况下，这可能不再成立。
+4. Referentially transparent(引用透明) was Broken: 在没有赋值的情况下，一个表达式可以被它所代表的结果替换掉而不改变程序的行为。但是在有赋值操作的情况下，这可能不再成立。
 
 All of those problems are mainly due to we want to simulate this world's change by simulate our computed object with status which changed accompanied with time.
 
@@ -73,7 +73,7 @@ All of those problems are mainly due to we want to simulate this world's change 
 
 例如, 在求解微分方程 $$dy/dt = f (y)$$ 时，我们可以将其表现为这样的一个 “电路” 模拟。
 
-> 用数学语言来说，如果我们想要得到函数f(x)在点x=a处的导数（记为f'(a)或者df/dx|x=a），我们会考虑x从a增加一个非常小的值h时函数值f(x)的增加量，并且计算这个增加量与h之间比值（即[f(a+h)-f(a)]/h）当h趋向于0时的极限值。如果这个极限存在，则称f在a处可导，并且这个极限值就是导数。
+> 用数学语言来说，如果我们想要得到函数 $f(x)$ 在点 $x=a$ 处的导数（记为$f'(a)$ 或者 $\frac{df}{dx}| x=a$），我们会考虑x从a增加一个非常小的值h时函数值f(x)的增加量，并且计算这个增加量与h之间比值（即 $\frac{f(a+h)-f(a)}{h}$）当 $h \to 0$ 时的极限值。如果这个极限存在，则称f在a处可导，并且这个极限值就是导数。
 >
 > **微分**则更侧重于“增量”的概念。仍然考虑上面那个函数 $y=f(x$)，微分描述了当输入变量 $x$ 增加了一个非常小的量 $dx$ 时，输出变量 $y$ 增加了多少。我们通常将这个输出增加量称为 $dy$，并且 $dy$ 近似等于$f'(x)*dx$。这个 $dy/dx$ 所形成的方程就是微分方程中的 $f(y)$
 >

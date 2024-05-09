@@ -51,6 +51,6 @@
                     (expand-clauses rest))]))))
 
 (define (analyze-cond exp)
-  (lambda (env) ((analyze (cond->if exp)) env)))
+  (lambda (env succeed fail) ((analyze (cond->if exp)) env succeed fail)))
 
 (#%provide analyze-cond)
