@@ -2,17 +2,6 @@
 
 ;; from quiz 3.25
 ;; binary-search tree based appendonly multi-dim table
-;; use case
-#| (put 1 'a 'b 'c) |#
-#| (put 2 'a 'b 'd) |#
-#| (put 3 'a 'b) |#
-;;
-;;
-#| (get 'a) => #f        |#
-#| (get 'a 'b) => 3      |#
-#| (get 'a 'b 'c) => 2   |#
-#| (get 'a 'b 'd) => 1   |#
-#| (get 'x) => #f        |#
 
 ;; helpers
 (define (entry tree)
@@ -129,10 +118,14 @@
                     (begin
                       (set-record-subtable
                        table
-                       (insert-iter!
-                        value
-                        (make-record current-key '() '())
-                        remain-keys))
+                       (adjoin-set
+                        (insert-iter!
+                         value
+                         (make-record current-key '() '())
+                         remain-keys)
+                        subtable
+                        )
+                       )
                       table))))))
       (insert-iter! value local-table keys)
       local-table)
@@ -163,4 +156,19 @@
 (define get (operational-table 'lookup-proc))
 (define put (operational-table 'insert-proc!))
 
+;; ;; use case
+;; (put 1 'a 'b 'c)
+;; (put 2 'a 'b 'd)
+;; (put 3 'a 'b)
+;; ;;
+;; (get 'a)
+;; ;; => #f
+;; (get 'a 'b)
+;; ;; => 3
+;; (get 'a 'b 'c)
+;; ;; => 2
+;; (get 'a 'b 'd)
+;; ;; => 1
+;; (get 'x)
+;; => #f
 (#%provide operational-table get put make-table)

@@ -2,21 +2,20 @@
 
 ;; Rule is a means of abstract querying
 
-(rule (lives-near ?person-1 ?person-2)
+(assert! (rule (lives-near ?person-1 ?person-2)
       (and (address ?person-1 (?town . ?rest-1))
            (address ?person-2 (?town . ?rest-2))
-           (not (same ?person-1 ?person-2))))
+           (not (same ?person-1 ?person-2)))))
 
 ;; a rule without body means any values of the variable can satisfy the pattern
 ;; 实际上，如果要判断两个东西一样，是不需要专门写一条 rule 的，
 ;; 因为只要我们的查询写上同样的变量名本来就暗含了这样的搜索条件
 ;;  所以这里的 rule 本质上没有意义 它只有和 not 结合的时候才有意义
 ;; 本质上，就是先匹配任何传进来的东西，然后用 not 去把传进来的 ?x 去掉
-(rule (same ?x ?x))
-
-(rule (wheel ?person)
+(assert! (rule (same ?x ?x)))
+(assert! (rule (wheel ?person)
       (and (supervisor ?middle-manager ?person)
-           (supervisor ?x ?middle-manager)))
+           (supervisor ?x ?middle-manager))))
 
 ;; Query Inputs:
 (lives-near ?x (Bitdiddle Ben))

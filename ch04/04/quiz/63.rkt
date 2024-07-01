@@ -1,23 +1,23 @@
 #lang sicp
 
-(son Adam Cain)
-(son Cain Enoch)
-(son Enoch Irad)
-(son Irad Mehujael)
-(son Mehujael Methushael)
-(son Methushael Lamech)
-(wife Lamech Ada)
-(son Ada Jabal)
-(son Ada Jubal)
+(assert! (son Adam Cain))
+(assert! (son Cain Enoch))
+(assert! (son Enoch Irad))
+(assert! (son Irad Mehujael))
+(assert! (son Mehujael Methushael))
+(assert! (son Methushael Lamech))
+(assert! (wife Lamech Ada))
+(assert! (son Ada Jabal))
+(assert! (son Ada Jubal))
 
 ;; Formulate rules such as
 ;; “If S is the son of f, and f is the son of G,then S is the grandson of G”
 ;; and
-;; “If W is the wife of M,and S is the son of W,then S is the son of M”
-(rule (find-son ?M ?S)
-      (or (son ?M ?S) 
-          (and 
-            (wife ?M ?W)
-            (son ?W ?S))))
+;; “If W is the wife of F,and S is the son of W,then S is the son of F”
+(assert! (rule (find-son ?F ?S)
+               (or (son ?F ?S)
+                   (and
+                    (wife ?F ?W)
+                    (son ?W ?S)))))
 
-(rule (grandson S? G?) (and (son S? F?) (son F? G?)))
+(assert! (rule (grandson G? S?) (and (son F? S?) (son G? F?))))

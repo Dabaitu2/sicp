@@ -22,7 +22,7 @@
 ;; (define (delay exp)
 ;;   (memo-proc (lambda () exp)))
 
-;; 这里的 cons-stream 实际上是用不了的，因为按照求值模型，y 还是会在调用 cons-stream 的时候被求值
+;; 这里的 cons-stream 实际上是用不了的，因为按照求值模型，y 还是会在调用 cons-stream 的时候被求值 (应用序求值)
 ;; 在这里我们只能先跳过, 使用 sicp 提供的
 ;; (define (cons-stream x y)
 ;;   (cons x (delay y)))
@@ -126,6 +126,12 @@
 (define ones (cons-stream 1 ones))
 (define integers (cons-stream 1 (add-stream ones integers)))
 
+(define (stream-append s1 s2)
+  (if (stream-null? s1)
+      s2
+      (cons-stream (stream-car s1)
+                   (stream-append (stream-cdr s1) s2))))
+
 (define (interleave s1 s2)
   (if (stream-null? s1)
       s2
@@ -186,6 +192,36 @@
 (define (list->stream l)
   (cons-stream (car l) (list->stream (cdr l))))
 
+(define (stream-append-delayed s1 delayed-s2)
+  (if (stream-null? s1)
+      (force delayed-s2)
+      (cons-stream (stream-car s1)
+                   (stream-append-delayed (stream-cdr s1)
+                                          delayed-s2))))
+
+(define (interleave-delayed s1 delayed-s2)
+  (if (stream-null? s1)
+      (force delayed-s2)
+      (cons-stream (stream-car s1)
+                   (interleave-delayed
+                    (force delayed-s2)
+                    (delay (stream-cdr s1))))))
+
+;; 将 proc 应用到所有 stream 元素 (惰性的)
+;; 并将结果打平, 因为 proc 执行的结果可能产生一个新的流，就像 4.4 节 的查询语言设计的那样
+(define (stream-flatmap proc s)
+  (flatten-stream (stream-map proc s)))
+
+(define (flatten-stream stream)
+  (if (stream-null? stream)
+      the-empty-stream
+      (interleave-delayed
+       (stream-car stream)
+       (delay (flatten-stream (stream-cdr stream))))))
+
+(define (singleton-stream x)
+  (cons-stream x the-empty-stream))
+
 (#%provide cons-stream
            stream-cdr
            stream-car
@@ -195,7 +231,7 @@
            display-line
            stream-map
            stream-ref
-           display-stream
+           stream-append
            stream-filter
            add-stream
            mul-streams
@@ -210,4 +246,8 @@
            integral-stream
            delay-integral
            list->stream
-           )
+           display-stream
+           stream-flatmap
+           stream-append-delayed
+           interleave-delayed
+           singleton-stream)
