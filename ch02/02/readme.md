@@ -6,5 +6,5 @@
 
 ## 01 Representing Sequence
 ## 02 Hierarchical Structures
-## 03 Sequence as Conventional Interfaces
+## 03 Sequence as Conventional Interfaces (作为约定接口的序列)
 ## 04 Example: A Picture Lanaguage

@@ -30,9 +30,9 @@
 
 ;; 快速求幂法
 (define (fast-expt b n)
-  (cond [(= n 0) 1]
-        [(even? n) (square (fast-expt b (/ n 2)))]
-        [else (* b (fast-expt b (- n 1)))]))
+  (cond ((= n 0) 1)
+        ((even? n) (square (fast-expt b (/ n 2))))
+        (else (* b (fast-expt b (- n 1))))))
 
 ;; GCD 求最大公约数
 (define (gcd a b)
@@ -45,9 +45,9 @@
   (define (smallest-divisor n)
     (define (divides? a b) (= (remainder b a) 0))
     (define (find-divisor test-divisor)
-      (cond [(> (square test-divisor) n) n]
-            [(divides? test-divisor n) test-divisor]
-            [else (find-divisor (+ test-divisor 1))]))
+      (cond ((> (square test-divisor) n) n)
+            ((divides? test-divisor n) test-divisor)
+            (else (find-divisor (+ test-divisor 1)))))
     (find-divisor 2))
   (= n (smallest-divisor n)))
 
