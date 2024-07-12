@@ -35,7 +35,8 @@
          (stream-fullfil-promises
           #t
           (qeval q
-                 (singleton-stream (make-frame '() '()))))))
+                 (singleton-stream (make-frame '() '())))
+          )))
        (query-driver-loop)])))
 
 (define (prompt-for-input string)

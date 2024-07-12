@@ -42,11 +42,14 @@
 ;; 最基本的查询逻辑
 (define (find-assertions pattern frame)
   (simple-stream-flatmap
-   (lambda (datum) (check-an-assertion datum pattern frame))
+   (lambda (datum)
+     (check-an-assertion datum pattern frame)
+     )
    ;; fetch-assertions 获得所有断言的 stream
    ;; 这里其实可以不使用此方法，而是直接搜索数据库, 不过 fetch-assertions 可以做一些
    ;; 预处理工作，提前去除一些不重要的数据. 一定程度上提升性能。
-   (fetch-assertions pattern frame)))
+   (fetch-assertions pattern frame)
+   ))
 
 ;; check-an-assertion 检查断言是否可以匹配上 pattern 和 frame
 (define (check-an-assertion assertion query-pat query-frame)

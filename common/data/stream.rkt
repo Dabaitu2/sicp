@@ -39,6 +39,10 @@
       (stream-ref (stream-cdr s) (- n 1))))
 
 (define stream-null? null?)
+(define (stream-single? stream)
+  (and (not (stream-null? stream))
+       (stream-null? (stream-cdr stream))))
+
 (define the-empty-stream '())
 
 ;; (define (stream-map proc s)
@@ -222,10 +226,21 @@
 (define (singleton-stream x)
   (cons-stream x the-empty-stream))
 
+(define (simple-stream-flatmap proc s)
+  (simple-flatten (stream-map proc s)))
+
+;; 只需要找到非空的 stream, 然后取出其中的第一个也是唯一一个元素, 再用 stream-map 进行拼接就好了
+(define (simple-flatten stream)
+  (stream-map stream-car
+              (stream-filter (lambda (x)
+                               (not (stream-null? x)))
+                             stream)))
+
 (#%provide cons-stream
            stream-cdr
            stream-car
            stream-null?
+           stream-single?
            the-empty-stream
            stream-enumerate-interval
            display-line
@@ -248,6 +263,7 @@
            list->stream
            display-stream
            stream-flatmap
+           simple-stream-flatmap
            stream-append-delayed
            interleave-delayed
            singleton-stream)

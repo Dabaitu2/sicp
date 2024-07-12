@@ -101,7 +101,7 @@
     [(var? pattern)
      (let ([binding (binding-in-frame pattern frame)])
        (and binding
-            (bounded? (binding-variable binding) frame)))]
+            (bounded? (binding-value binding) frame)))]
     [(pair? pattern)
      (and (bounded? (car pattern) frame)
           (bounded? (cdr pattern) frame))]
@@ -114,7 +114,7 @@
     (if (null? vars)
         #t
         (and (bounded? (car vars) frame)
-             (enough-variable-bound? (cdr vars) frame))))
+             (iter (cdr vars) frame))))
   (iter (promise-vars promise) frame))
 
 ;; 从 (not xxx) 的 xxx pattern 中获取变量
