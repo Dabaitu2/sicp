@@ -1,11 +1,12 @@
 #lang sicp
-(#%require "../../../common/data/stream.rkt")
+(#%require "../../../../common/data/stream.rkt")
 (#%require "./registry.rkt")
 (#%require "./predicates.rkt")
 (#%require "./core/database.rkt")
 (#%require "./core/elements.rkt")
 (#%require "./core/pattern-match.rkt")
 (#%require "./core/unify-match.rkt")
+(#%require "./core/binding.rkt")
 
 ;; 我们书写这些查询的方式依然采用了 wishful thinking, 也就是从 qeval 出发，分别处理简单和符合查询的顶层设计
 ;; 实际的实现留到后续完成
@@ -54,7 +55,10 @@
          (pattern-match query-pat assertion query-frame)])
     (if (eq? match-result 'failed)
         the-empty-stream
-        (singleton-stream match-result))))
+        (singleton-stream
+         ;; 记得继承之前的 promise
+         (make-frame (frame-bindings match-result)
+                     (frame-promises query-frame))))))
 
 ;; ================Handle Rules========================
 ;; 将目标 pattern 和 frame 作为上下文
@@ -82,7 +86,10 @@
           ;; 如果 unify-match 成功了，那么就将规则的 body 和 unify-result 作为上下文
           ;; 进一步的执行对 body 的实际查询
           (qeval (rule-body clean-rule)
-                 (singleton-stream unify-result))))))
+                 (singleton-stream
+                  (make-frame (frame-bindings unify-result)
+                              (frame-promises query-frame))
+                  ))))))
 
 (define (rename-variables-in rule)
   (let ([rule-application-id (new-rule-application-id)])
