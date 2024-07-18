@@ -8,6 +8,7 @@
 (#%require "./eval-if-fail.rkt")
 (#%require "./unbound.rkt")
 (#%require "./eval-assignment.rkt")
+(#%require "./eval-pair-assignment.rkt")
 (#%require "./eval-p-assignment.rkt")
 (#%require "./eval-require.rkt")
 
@@ -22,6 +23,8 @@
   (put analyze-begin 'exp 'begin)
   (put analyze-unbound! 'exp 'unbound)
   (put analyze-require 'exp 'require)
+  (put analyze-pair-car-assignment 'exp 'set-car!)
+  (put analyze-pair-cdr-assignment 'exp 'set-cdr!)
   "special-form loaded")
 
 (#%provide install-special-form-package)

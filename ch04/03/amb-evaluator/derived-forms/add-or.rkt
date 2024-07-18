@@ -15,8 +15,11 @@
       (make-if (first-exp exps)
                (expand-and (rest-exps exps))
                'false)))
-(define (analyze-and exp)
+(define (and->if exp)
   (expand-and (and-clauses exp)))
+
+(define (analyze-and exp)
+  (analyze (and->if exp)))
 
 (define (or? exp)
   (tagged-list? exp 'or))

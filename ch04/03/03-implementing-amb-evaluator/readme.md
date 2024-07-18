@@ -70,5 +70,5 @@
 1. 用户执行了 amb
 2. 用户输入 try-again
 
-F ailure continuation 则会在处理失败的过程中被使用。
+Failure continuation 则会在处理失败的过程中被使用。
 
