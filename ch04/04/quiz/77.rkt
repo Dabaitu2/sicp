@@ -1,5 +1,6 @@
 #lang sicp
 
+;; 完整实现见 dir 77 / playground.rkt 
 ;; 实现更优的 not 和 lisp-value 过程，
 ;; 使得其在完成过滤之前先等待某些必要条件
 
@@ -8,7 +9,6 @@
 ;; 简单的办法是，把 not 和 lisp 安排到 and 子查询列表的后面, 保证它们不会第一个被使用， 但题目中提到不希望这样做
 
 ;; 按照题目中给出的办法，增加一个 promise 来解决这些问题
-;; promise 的定义为:
 
 (define (make-frame bindings promises)
   (cons bindings promises))

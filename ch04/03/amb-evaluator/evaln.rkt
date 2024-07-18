@@ -132,6 +132,7 @@
         (if (null? choices)
             (fail)
             ;; 尝试执行某一个可能值的求值
+            ;; 这里 car 获得的东西肯定是一个被 analyze 过的东西，所以一定是个过程
             ((car choices)
              env
              ;; 在这里，只要 (choice env 没有什么幺蛾子(里面主动抛出 (amb))，应该是会成功的)
