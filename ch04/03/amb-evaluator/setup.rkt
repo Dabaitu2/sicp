@@ -37,9 +37,11 @@
             (ambeval input
                      the-global-environment
                      ;; ambeval success
+                     ;; next-alternative 本质上是内部的 fail
                      (lambda (val next-alternative)
                        (announce-output output-prompt)
                        (user-print val)
+                       ;; next-alternative 会变成下一轮的 try-again, 在用户输入 try-again 时被触发
                        (internal-loop next-alternative))
                      ;; ambeval failure
                      (lambda ()

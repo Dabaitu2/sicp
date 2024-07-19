@@ -106,7 +106,7 @@ which unfortunately will drive the system into an infinite loop.
 >
 > 对于第二个 Query，由于 not 的实现基础是基于从上面传入的 input stream 将其和 (job ?x (computer programmer)) 所构成的 stream 求差集，而在此例子上我们传入的 stream 是空的，这导致结果也是空的，并不能实际满足我们的需求，从而这个 not 在逻辑上显得是不完备的。
 >
-> 归根结底而言，这是因为我们将 not 解释成了一种 filter，这种问题同样也可能出现在  lisp-value 上面。
+> 归根结底而言，这是因为我们将 not 解释成了一种 filter，这种问题同样也可能出现在  lisp-value 上面。在习题中, 通过引入 promise 我们可以一定程度上解决这个问题.
 >
 > 除此之外，还有一个更严重的和数理逻辑中的 `not` 出入的方面。我们在查询系统中的 not 并不是数理逻辑中的 “非 true”，而只是说结论无法由我们的数据库中的知识推算出来。从这看来，我们的逻辑程序设计也不可以说是和数理逻辑完全等价的。比如我们在 4.4.1 节建立的数据库可以推导一些各种各样的 not 语句，例如 Ben Birdiddle 不喜欢篮球，外面没有下雨等等，然而这其实是不合理的。
 
