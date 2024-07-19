@@ -1,5 +1,7 @@
 # 4.4 Logic Programming
 
+## Prelude
+
 > 逻辑编程/程序设计 
 
 计算机科学处理的是 imperative (How to) 的知识, 而数学则处理的是 declarative (What is) 的知识
@@ -59,3 +61,56 @@
 而我们翻译出来的 what is 可以解决这类问题。
 
 我们要实现的逻辑程序语言，我们将试图让用户在写出一个 append 过程时，让其直接具有 what is 的能力，也就是用户只需要写出 what is，而 How to 由解释器自动地提供，从而使得用户提供的规则可以回答上面提出的所有关于 append 的问题。
+
+
+
+## 4.4.1 Deductive Information Retrieval 演绎信息检索
+
+> Deductive: “演绎式”, 在逻辑学和哲学中指从一般到个别的推理过程，即从已知规则推导出特定情况下的结论。在信息检索领域，“演绎式”通常指利用已有知识或规则系统来查询和推理数据。
+
+一个信息检索系统应该包括哪些内容?
+
+1. 已有的知识或规则, 类比于数据库中存储的数据, 例如下文中存储的一些 lisp 格式数据
+
+   ```scheme
+   (address (Bitdiddle Ben) (Slumerville (Ridge Road) 10))
+   (job (Bitdiddle Ben) (computer wizard))
+   (salary (Bitdiddle Ben) 60000)
+   ```
+
+2. 简单查询的能力: 它利用模式匹配去数据库中寻找符合查询模式的数据
+
+   ```scheme
+   (job ?x (computer . ?type))
+   ```
+
+3. 复合查询的能力: 它可以对简单查询按照逻辑方式进行组合, 例如 and, or, not 等
+
+   ```scheme
+   (and (job ?person (computer programmer)) 
+        (address ?person ?where))
+   ```
+
+4. 将逻辑看作程序的能力:  利用 **Rule 规则**, 我们可以将查询语言按照规则定义的查询条件进行匹配, 并推导出是否可以满足规则的结论的能力.
+
+   ```scheme
+   (rule (lives-near ?person-1 ?person-2)
+   			(and (address ?person-1 (?town . ?rest-1)) 
+              (address ?person-2 (?town . ?rest-2))
+              (not (same ?person-1 ?person-2))))
+   ```
+
+
+
+## 4.4.2 How the Query System Works? 查询系统如何工作?
+
+参考: [4.4.2](./02-how-the-query-system-works/readme.md)
+
+## 4.4.3 Is logic-programming mathematical logic? 逻辑程序语言和数理逻辑等价吗 ?
+
+参考: [4.4.3](./03-is-logic-programming-mathematical-logic/readme.md)
+
+## 4.4.4 Implementing the Query System 查询系统的实现
+
+参考 [4.4.4](./04-implementing-the-query-system/readme.md)
+

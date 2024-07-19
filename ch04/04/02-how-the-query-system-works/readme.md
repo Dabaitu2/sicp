@@ -1,7 +1,7 @@
 # Ways to achieve logic query system
 
-1. Implement it as a nondeterminstic program, using the amb evaluator.
-2. Manage with the search with the aid of streams.
+1. Implement it as a nondeterminstic program, using the amb evaluator. (in quiz 4.78)
+2. Manage with the search with the aid of streams. (In textbook)
 
 ## Central Operations: Pattern Matching and Unification
 

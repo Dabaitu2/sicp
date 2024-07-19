@@ -14,10 +14,13 @@
     (lambda (env succeed fail)
       (proc1 env
              ;; success continuation
+             ;; 这里的 fail2 一直是来自于最外层的 fail, 然后被一层层的透传
              (lambda (proc1-value fail2)
                ;; success will handle proc2
                ;; 所以可以看到，程序的下一步执行本质上是由这些语法解释结构自身实现的
                ;; 而不是一个通用结构处理
+               ;; 这里的 succeed 一直都是来自于最外层的 succeed, 在 sequence 被执行完成后调用
+               ;; 不要关心外界做了什么， 做好关注点分离
                (proc2 env succeed fail2))
              ;; failure continuation
              fail)))
