@@ -9,7 +9,7 @@
 3. means of Abstraction: 抽象的方法，通过这类方法我们可以为复合元素命名并且通过名字去操纵它们, 例如 lisp 中的 define
 
 同时，我们关心的 Elements 主要是两种: Procedure & Data
-但实际上，数据也是过程以及一些规则合并形成的，因此分得并没有那么开，这在第二章中会进一步阐述
+但实际上，数据也是*过程以及一些规则合并形成的*，因此分得并没有那么开，这在第二章中会进一步阐述
 
 程序设计的基本元素如下
 1. Expression 表达式：当输入一个表达式, lisp 解释器会对这个表达式进行求值
@@ -35,7 +35,7 @@
 
 
 ### 2. Procedures and the Processes They Generate
-本小节通过描述计算的 “形状”,  结合递归计算过程和迭代计算过程实例
+本小节通过描述计算的 “形状”,  结合递归计算过程 (Recursive Computational Process) 和迭代计算过程 (Iterative Computational Process) 实例
 来判断一个过程是否是耗时的, 并且给出了 ϴ 增长阶来度量过程
 如果存在与n无关的整数k1 和 k2，使得:
 $$
